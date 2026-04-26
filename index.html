@@ -7,9 +7,11 @@
 <style>
 body {background:#0b0b0b;color:white;font-family:Arial;margin:0;max-width:500px;margin:auto;}
 
-#login {
+/* LOGIN */
+#pantallaLogin {
   display:flex;flex-direction:column;justify-content:center;
   align-items:center;height:100vh;text-align:center;
+  background:#0b0b0b;
 }
 
 input {
@@ -24,10 +26,15 @@ button {
 
 button:active {opacity:0.7;}
 
+/* BARRA */
 #barraUsuario {
   display:none;background:#111;padding:10px;text-align:center;
 }
 
+.rol {color:#00aaff;font-weight:bold;}
+.user {color:#00ff88;font-weight:bold;}
+
+/* RESTO IGUAL */
 #portada img {width:100%;height:200px;object-fit:cover;}
 .titulo {font-size:22px;margin-top:10px;text-align:center;}
 .sub {color:gray;text-align:center;}
@@ -53,7 +60,7 @@ button:active {opacity:0.7;}
 <body>
 
 <!-- LOGIN -->
-<div id="login">
+<div id="pantallaLogin">
   <img src="https://via.placeholder.com/800x200">
   <h1>A&T KAMIARA S.A.C</h1>
   <p style="color:gray;">Sistema de Inventario</p>
@@ -61,14 +68,14 @@ button:active {opacity:0.7;}
   <input id="usuario" placeholder="Usuario">
   <input id="password" type="password" placeholder="Contraseña">
 
-  <button onclick="login()">Entrar</button>
+  <button onclick="iniciarSesion()">Entrar</button>
   <p id="errorLogin" style="color:red;"></p>
 </div>
 
 <!-- BARRA USUARIO -->
 <div id="barraUsuario">
   <span id="infoUser"></span>
-  <button onclick="logout()" style="background:#333;">Salir</button>
+  <button onclick="logout()" style="background:red;">Salir</button>
 </div>
 
 <!-- PANEL BTN -->
@@ -126,6 +133,7 @@ button:active {opacity:0.7;}
 </div>
 
 <script>
+
 // USUARIOS
 const usuarios = {
   "luis": { pass: "1234", rol: "GERENTE" },
@@ -134,25 +142,8 @@ const usuarios = {
   "richar": { pass: "admin123", rol: "PROGRAMADOR" }
 };
 
-// CONFIG
-const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
-const urlVentas = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/VENTAS";
-
-const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeoXDQp-aMlsrDCrq1r42QybYUgL-hdi1PiIWpRgnTc2A0STg/viewform";
-
-const ENTRY_PRODUCTO = "entry.1002750291";
-const ENTRY_TIPO = "entry.112461346";
-const ENTRY_CANTIDAD = "entry.838577118";
-const ENTRY_VENDEDOR = "entry.618694440";
-
-const FORM_ADMIN = "https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
-const SHEETS_VENTAS = "https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
-
-let inventario = [];
-let cargado = false;
-
-// LOGIN
-function login(){
+// LOGIN CORREGIDO
+function iniciarSesion(){
   const user = document.getElementById("usuario").value.toLowerCase();
   const pass = document.getElementById("password").value;
 
@@ -171,11 +162,11 @@ window.onload = ()=>{
   const rol = localStorage.getItem("rol");
 
   if(user && rol){
-    document.getElementById("login").style.display="none";
+    document.getElementById("pantallaLogin").style.display="none";
     document.getElementById("barraUsuario").style.display="block";
 
-    document.getElementById("infoUser").innerText =
-      user.toUpperCase() + " - " + rol;
+    document.getElementById("infoUser").innerHTML =
+      `👤 <span class="rol">${rol}</span> : <span class="user">${user.toUpperCase()}</span>`;
 
     if(rol === "PROGRAMADOR"){
       document.getElementById("panelBtn").style.display="block";
@@ -184,8 +175,6 @@ window.onload = ()=>{
   } else {
     document.getElementById("menu").style.display="none";
   }
-
-  cargarInventario();
 };
 
 // LOGOUT
@@ -194,184 +183,6 @@ function logout(){
   location.reload();
 }
 
-// INVENTARIO
-function cargarInventario(){
-  fetch(urlInv)
-  .then(r=>r.json())
-  .then(d=>{
-    inventario = d.map(p=>{
-      let o={};
-      Object.keys(p).forEach(k=>{
-        o[k.trim().toLowerCase()] = p[k];
-      });
-      return o;
-    });
-    cargado = true;
-  });
-}
-
-// CATEGORIAS
-function abrir(cat){
-  if(!cargado){
-    alert("Cargando inventario...");
-    return;
-  }
-
-  document.getElementById("menu").style.display="none";
-  document.getElementById("productos").style.display="flex";
-  document.getElementById("volver").style.display="block";
-
-  let f = inventario.filter(p=>{
-    return (p.categoria || "").toUpperCase() === cat;
-  });
-
-  render(f);
-}
-
-function inicio(){
-  document.getElementById("menu").style.display="flex";
-  document.getElementById("productos").style.display="none";
-  document.getElementById("panel").style.display="none";
-  document.getElementById("dashboard").style.display="none";
-  document.getElementById("volver").style.display="none";
-}
-
-// PRODUCTOS
-function render(lista){
-  let html="";
-  lista.forEach(p=>{
-    html+=`
-      <div class="card">
-        <img src="${p.imagen || ''}">
-        <h3>${p.producto}</h3>
-        <p>📦 ${p.stock}</p>
-        <p>Unidad: S/ ${p.unidad}</p>
-        <p>Docena: S/ ${p.docena}</p>
-        <p>Cajón: S/ ${p.cajon}</p>
-
-        <button onclick="vender('${p.producto}','UNIDAD')">Unidad</button>
-        <button onclick="vender('${p.producto}','DOCENA')">Docena</button>
-        <button onclick="vender('${p.producto}','CAJON')">Cajón</button>
-      </div>
-    `;
-  });
-  document.getElementById("productos").innerHTML = html;
-}
-
-// VENDER
-function vender(prod,tipo){
-  const vendedor = localStorage.getItem("usuario") || "SinNombre";
-
-  const link = FORM + "?" +
-    ENTRY_PRODUCTO + "=" + encodeURIComponent(prod) +
-    "&" + ENTRY_TIPO + "=" + tipo +
-    "&" + ENTRY_CANTIDAD + "=1" +
-    "&" + ENTRY_VENDEDOR + "=" + encodeURIComponent(vendedor);
-
-  window.open(link,"_blank");
-}
-
-// PANEL
-function abrirPanel(){
-  document.getElementById("menu").style.display="none";
-  document.getElementById("panel").style.display="block";
-}
-
-function abrirFormulario(){
-  window.open(FORM_ADMIN,"_blank");
-}
-
-function verVentas(){
-  window.open(SHEETS_VENTAS,"_blank");
-}
-
-// DASHBOARD
-function abrirDashboard(){
-  document.getElementById("panel").style.display="none";
-  document.getElementById("dashboard").style.display="block";
-  cargarDashboard();
-}
-
-function cargarDashboard(){
-  fetch(urlVentas)
-  .then(r=>r.json())
-  .then(ventas=>{
-    let total=0, dinero=0, productos={}, dias={};
-
-    ventas.forEach(v=>{
-      let prod=v.Producto?.toLowerCase();
-      let tipo=v.Tipo?.toLowerCase();
-      let cant=Number(v.Cantidad)||0;
-
-      total+=cant;
-
-      let item = inventario.find(i=>i.producto.toLowerCase()===prod);
-      let precio=0;
-
-      if(item){
-        if(tipo==="unidad") precio=Number(item.unidad)||0;
-        if(tipo==="docena") precio=Number(item.docena)||0;
-        if(tipo==="cajon") precio=Number(item.cajon)||0;
-      }
-
-      dinero+=precio*cant;
-
-      productos[prod]=(productos[prod]||0)+cant;
-
-      let dia=(v.Fecha||"").split(" ")[0];
-      dias[dia]=(dias[dia]||0)+cant;
-    });
-
-    document.getElementById("totalVentas").innerText="Total: "+total;
-    document.getElementById("ganancias").innerText="Ganancias: S/ "+dinero;
-
-    mostrarTop(productos);
-    graficoDias(dias);
-    alertasStock();
-  });
-}
-
-function mostrarTop(p){
-  let ul=document.getElementById("topProductos");
-  ul.innerHTML="";
-  Object.entries(p).sort((a,b)=>b[1]-a[1]).slice(0,5)
-  .forEach(x=>{
-    let li=document.createElement("li");
-    li.innerText=x[0]+" - "+x[1];
-    ul.appendChild(li);
-  });
-}
-
-function graficoDias(d){
-  let c=document.getElementById("graficoDias");
-  let ctx=c.getContext("2d");
-  ctx.clearRect(0,0,c.width,c.height);
-
-  let dias=Object.keys(d), vals=Object.values(d);
-  let max=Math.max(...vals,1);
-  let w=c.width/dias.length;
-
-  vals.forEach((v,i)=>{
-    let h=(v/max)*150;
-    ctx.fillStyle="orange";
-    ctx.fillRect(i*w,200-h,w-10,h);
-    ctx.fillStyle="white";
-    ctx.fillText(dias[i], i*w,190);
-  });
-}
-
-function alertasStock(){
-  let ul=document.getElementById("alertas");
-  ul.innerHTML="";
-
-  inventario.forEach(p=>{
-    if(Number(p.stock)<=5){
-      let li=document.createElement("li");
-      li.innerText=p.producto+" (Stock: "+p.stock+")";
-      ul.appendChild(li);
-    }
-  });
-}
 </script>
 
 </body>
