@@ -10,11 +10,9 @@ body {
   color:white;
   font-family:Arial;
   margin:0;
-  max-width:500px;
-  margin:auto;
 }
 
-/* LOGIN BIEN CENTRADO */
+/* LOGIN */
 #pantallaLogin {
   position:fixed;
   top:0;left:0;
@@ -25,6 +23,12 @@ body {
   align-items:center;
   background:#0b0b0b;
   z-index:999;
+}
+
+/* APP CENTRADA */
+#app {
+  max-width:500px;
+  margin:auto;
 }
 
 input {
@@ -45,6 +49,7 @@ button {
   color:white;
 }
 
+/* BARRA */
 #barraUsuario {
   display:none;
   background:#111;
@@ -98,6 +103,9 @@ button {
   <button onclick="iniciarSesion()">Entrar</button>
   <p id="errorLogin" style="color:red;"></p>
 </div>
+
+<!-- APP -->
+<div id="app">
 
 <!-- BARRA -->
 <div id="barraUsuario">
@@ -159,19 +167,20 @@ button {
   <button onclick="inicio()">⬅ Volver</button>
 </div>
 
+</div>
+
 <script>
 
 // USUARIOS
 const usuarios = {
-  "luis": { pass: "1234", rol: "GERENTE" },
-  "katy": { pass: "1234", rol: "VENDEDORA" },
-  "juan": { pass: "1234", rol: "VENDEDOR" },
-  "richar": { pass: "admin123", rol: "PROGRAMADOR" }
+  "luis": { pass: "1234", rol: "USUARIO" },
+  "katy": { pass: "1234", rol: "USUARIA" },
+  "juan": { pass: "1234", rol: "USUARIO" },
+  "richar": { pass: "admin123", rol: "ADMINISTRADOR" }
 };
 
 // CONFIG
 const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
-const urlVentas = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/VENTAS";
 
 let inventario = [];
 let cargado = false;
@@ -201,6 +210,11 @@ window.onload = ()=>{
 
     document.getElementById("infoUser").innerHTML =
       `👤 <span class="rol">${rol}</span> : <span class="user">${user.toUpperCase()}</span>`;
+
+    if(rol === "ADMINISTRADOR"){
+      document.getElementById("panelBtn").style.display="block";
+    }
+
   } else {
     document.getElementById("menu").style.display="none";
   }
@@ -248,7 +262,7 @@ function abrir(cat){
   render(f);
 }
 
-// RENDER
+// PRODUCTOS
 function render(lista){
   let html="";
   lista.forEach(p=>{
