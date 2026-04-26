@@ -5,87 +5,43 @@
 <title>A&T KAMIARA</title>
 
 <style>
-body {
-  background:#0b0b0b;
-  color:white;
-  font-family:Arial;
-  margin:0;
-}
+body {background:#0b0b0b;color:white;font-family:Arial;margin:0;}
 
-/* LOGIN */
 #pantallaLogin {
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#0b0b0b;
-  z-index:999;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:#0b0b0b;z-index:999;
 }
 
-/* APP CENTRADA */
-#app {
-  max-width:500px;
-  margin:auto;
-}
+#app {max-width:500px;margin:auto;}
 
 input {
-  margin-top:10px;
-  padding:10px;
-  width:80%;
-  border-radius:10px;
-  border:none;
+  margin-top:10px;padding:10px;width:80%;
+  border-radius:10px;border:none;
 }
 
 button {
-  width:80%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:red;
-  color:white;
+  width:80%;margin-top:10px;padding:10px;
+  border:none;border-radius:10px;background:red;color:white;
 }
 
-/* BARRA */
-#barraUsuario {
-  display:none;
-  background:#111;
-  padding:10px;
-  text-align:center;
-}
-
+#barraUsuario {display:none;background:#111;padding:10px;text-align:center;}
 .rol {color:#00aaff;font-weight:bold;}
 .user {color:#00ff88;font-weight:bold;}
 
-#portada img {width:100%;height:200px;object-fit:cover;}
-.titulo {font-size:22px;margin-top:10px;text-align:center;}
-.sub {color:gray;text-align:center;}
-
 #menu {display:flex;flex-wrap:wrap;justify-content:center;}
-.menu-card {
-  width:40%;
-  margin:10px;
-  padding:10px;
-  border-radius:15px;
-  background:#111;
-  text-align:center;
-}
+.menu-card {width:40%;margin:10px;padding:10px;border-radius:15px;background:#111;text-align:center;}
 
 #productos {display:none;flex-wrap:wrap;justify-content:center;}
-.card {
-  width:45%;
-  margin:10px;
-  padding:10px;
-  border-radius:15px;
-  background:#111;
-}
+.card {width:45%;margin:10px;padding:10px;border-radius:15px;background:#111;}
 .card img {width:100%;border-radius:10px;}
 
+#detalle {display:none;padding:15px;}
+.tallas {display:flex;flex-wrap:wrap;justify-content:center;}
+.talla-card {background:#111;margin:5px;padding:10px;border-radius:10px;width:45%;text-align:center;}
+
+.back {background:#333;}
 #volver {display:none;padding:10px;background:#222;text-align:center;}
-#panel, #dashboard {display:none;padding:20px;}
 </style>
 </head>
 
@@ -93,13 +49,10 @@ button {
 
 <!-- LOGIN -->
 <div id="pantallaLogin">
-  <img src="https://via.placeholder.com/800x200">
   <h1>A&T KAMIARA S.A.C</h1>
   <p style="color:gray;">Sistema de Inventario</p>
-
   <input id="usuario" placeholder="Usuario">
   <input id="password" type="password" placeholder="Contraseña">
-
   <button onclick="iniciarSesion()">Entrar</button>
   <p id="errorLogin" style="color:red;"></p>
 </div>
@@ -107,65 +60,18 @@ button {
 <!-- APP -->
 <div id="app">
 
-<!-- BARRA -->
 <div id="barraUsuario">
   <span id="infoUser"></span>
   <button onclick="logout()" style="background:red;">Salir</button>
 </div>
 
-<!-- PANEL BTN -->
-<div id="panelBtn" style="display:none;">
-  <button onclick="abrirPanel()">⚙️ PANEL ADMIN</button>
-</div>
-
-<!-- PORTADA -->
-<div id="portada">
-  <img src="https://via.placeholder.com/800x200">
-  <div class="titulo">A&T KAMIARA S.A.C.</div>
-  <div class="sub">Control de Inventario</div>
-</div>
-
-<!-- MENU -->
 <div id="menu">
-  <div class="menu-card" onclick="abrir('INVIERNO')">❄️ INVIERNO</div>
-  <div class="menu-card" onclick="abrir('VERANO')">☀️ VERANO</div>
-  <div class="menu-card" onclick="abrir('TECNOLOGIA')">💻 TECNOLOGÍA</div>
-  <div class="menu-card" onclick="abrir('OTONO')">🍂 OTOÑO</div>
-  <div class="menu-card" onclick="abrir('NAVIDAD')">🎄 NAVIDAD</div>
-  <div class="menu-card" onclick="abrir('JUGUETES')">🧸 JUGUETES</div>
-  <div class="menu-card" onclick="abrir('OTROS')">📦 OTROS</div>
+  <div class="menu-card" onclick="abrir('INVIERNO')">INVIERNO</div>
+  <div class="menu-card" onclick="abrir('VERANO')">VERANO</div>
 </div>
 
-<div id="volver" onclick="inicio()">⬅ Volver</div>
 <div id="productos"></div>
-
-<!-- PANEL -->
-<div id="panel">
-  <h2>Panel Admin</h2>
-  <button onclick="abrirFormulario()">➕ Agregar Producto</button>
-  <button onclick="verVentas()">📊 Ver Ventas</button>
-  <button onclick="abrirDashboard()">📊 Dashboard</button>
-  <button onclick="inicio()">⬅ Volver</button>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard">
-  <h2>📊 Dashboard</h2>
-
-  <p id="totalVentas"></p>
-  <p id="ganancias"></p>
-
-  <h3>🏆 Top Productos</h3>
-  <ul id="topProductos"></ul>
-
-  <h3>📅 Ventas por Día</h3>
-  <canvas id="graficoDias" height="200"></canvas>
-
-  <h3>⚠️ Stock Bajo</h3>
-  <ul id="alertas"></ul>
-
-  <button onclick="inicio()">⬅ Volver</button>
-</div>
+<div id="detalle"></div>
 
 </div>
 
@@ -175,27 +81,27 @@ button {
 const usuarios = {
   "luis": { pass: "1234", rol: "USUARIO" },
   "katy": { pass: "1234", rol: "USUARIA" },
-  "juan": { pass: "1234", rol: "USUARIO" },
   "richar": { pass: "admin123", rol: "ADMINISTRADOR" }
 };
 
-// CONFIG
-const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
-
-let inventario = [];
-let cargado = false;
+// INVENTARIO DEMO (puedes reemplazar por tu Google Sheets)
+let inventario = [
+  {producto:"Polera", talla:"S", stock:2, unidad:10, docena:100, cajon:500, categoria:"INVIERNO", imagen:"https://via.placeholder.com/150"},
+  {producto:"Polera", talla:"M", stock:5, unidad:10, docena:100, cajon:500, categoria:"INVIERNO", imagen:"https://via.placeholder.com/150"},
+  {producto:"Polera", talla:"L", stock:0, unidad:10, docena:100, cajon:500, categoria:"INVIERNO", imagen:"https://via.placeholder.com/150"}
+];
 
 // LOGIN
 function iniciarSesion(){
-  const user = document.getElementById("usuario").value.toLowerCase();
-  const pass = document.getElementById("password").value;
+  const user = usuario.value.toLowerCase();
+  const pass = password.value;
 
   if(usuarios[user] && usuarios[user].pass === pass){
     localStorage.setItem("usuario", user);
     localStorage.setItem("rol", usuarios[user].rol);
     location.reload();
   } else {
-    document.getElementById("errorLogin").innerText = "Usuario o contraseña incorrectos";
+    errorLogin.innerText="Datos incorrectos";
   }
 }
 
@@ -204,22 +110,14 @@ window.onload = ()=>{
   const user = localStorage.getItem("usuario");
   const rol = localStorage.getItem("rol");
 
-  if(user && rol){
-    document.getElementById("pantallaLogin").style.display="none";
-    document.getElementById("barraUsuario").style.display="block";
+  if(user){
+    pantallaLogin.style.display="none";
+    barraUsuario.style.display="block";
 
-    document.getElementById("infoUser").innerHTML =
-      `👤 <span class="rol">${rol}</span> : <span class="user">${user.toUpperCase()}</span>`;
-
-    if(rol === "ADMINISTRADOR"){
-      document.getElementById("panelBtn").style.display="block";
-    }
-
+    infoUser.innerHTML = `👤 <span class="rol">${rol}</span> : <span class="user">${user.toUpperCase()}</span>`;
   } else {
-    document.getElementById("menu").style.display="none";
+    menu.style.display="none";
   }
-
-  cargarInventario();
 };
 
 // LOGOUT
@@ -228,60 +126,69 @@ function logout(){
   location.reload();
 }
 
-// INVENTARIO
-function cargarInventario(){
-  fetch(urlInv)
-  .then(r=>r.json())
-  .then(d=>{
-    inventario = d.map(p=>{
-      let o={};
-      Object.keys(p).forEach(k=>{
-        o[k.trim().toLowerCase()] = p[k];
-      });
-      return o;
-    });
-    cargado = true;
-  });
-}
-
-// CATEGORIAS
+// ABRIR CATEGORIA
 function abrir(cat){
-  if(!cargado){
-    alert("Cargando inventario...");
-    return;
-  }
+  productos.style.display="flex";
+  detalle.style.display="none";
 
-  document.getElementById("menu").style.display="none";
-  document.getElementById("productos").style.display="flex";
-  document.getElementById("volver").style.display="block";
+  let lista = inventario.filter(p=>p.categoria===cat);
 
-  let f = inventario.filter(p=>{
-    return (p.categoria || "").toUpperCase() === cat;
-  });
-
-  render(f);
-}
-
-// PRODUCTOS
-function render(lista){
   let html="";
   lista.forEach(p=>{
     html+=`
-      <div class="card">
-        <img src="${p.imagen || ''}">
+      <div class="card" onclick="verDetalle('${p.producto}')">
+        <img src="${p.imagen}">
         <h3>${p.producto}</h3>
-        <p>📦 ${p.stock}</p>
       </div>
     `;
   });
-  document.getElementById("productos").innerHTML = html;
+
+  productos.innerHTML=html;
+}
+
+// DETALLE
+function verDetalle(nombre){
+  productos.style.display="none";
+  detalle.style.display="block";
+
+  let items = inventario.filter(p=>p.producto===nombre);
+
+  let html=`<h2>${nombre}</h2><div class="tallas">`;
+
+  items.forEach(p=>{
+    let color = p.stock <= 3 ? "red" : "lime";
+    let disabled = p.stock <= 0 ? "disabled" : "";
+
+    html+=`
+      <div class="talla-card">
+        <h4>Talla ${p.talla}</h4>
+        <p style="color:${color};font-weight:bold;">Stock: ${p.stock}</p>
+
+        <p>Unidad: S/${p.unidad}</p>
+        <p>Docena: S/${p.docena}</p>
+        <p>Cajón: S/${p.cajon}</p>
+
+        <button ${disabled} onclick="comprar('${p.producto}','${p.talla}')">
+          ${p.stock <= 0 ? "Sin stock" : "Comprar"}
+        </button>
+      </div>
+    `;
+  });
+
+  html+=`</div><button class="back" onclick="volver()">⬅ Volver</button>`;
+
+  detalle.innerHTML=html;
 }
 
 // VOLVER
-function inicio(){
-  document.getElementById("menu").style.display="flex";
-  document.getElementById("productos").style.display="none";
-  document.getElementById("volver").style.display="none";
+function volver(){
+  detalle.style.display="none";
+  productos.style.display="flex";
+}
+
+// COMPRAR
+function comprar(prod,talla){
+  alert("Venta: " + prod + " - Talla: " + talla);
 }
 
 </script>
