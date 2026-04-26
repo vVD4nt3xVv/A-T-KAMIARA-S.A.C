@@ -11,7 +11,7 @@ body {background:#0b0b0b;color:white;font-family:Arial;margin:0;max-width:500px;
 #pantallaLogin {
   display:flex;flex-direction:column;justify-content:center;
   align-items:center;height:100vh;text-align:center;
-  position:fixed;width:100%;background:#0b0b0b;z-index:999;
+  background:#0b0b0b;
 }
 
 input {
@@ -29,8 +29,8 @@ button {
   display:none;background:#111;padding:10px;text-align:center;
 }
 
-.rol {color:#00aaff;font-weight:bold;}
-.user {color:#00ff88;font-weight:bold;}
+.rol {color:#00aaff;}
+.user {color:#00ff88;}
 
 /* MENU */
 #menu {display:flex;flex-wrap:wrap;justify-content:center;}
@@ -48,18 +48,7 @@ button {
 }
 .card img {width:100%;border-radius:10px;}
 
-/* DETALLE */
-#detalle {display:none;padding:15px;text-align:center;}
-
-.tallas {
-  display:flex;flex-wrap:wrap;justify-content:center;
-}
-
-.talla-card {
-  background:#111;margin:5px;padding:10px;border-radius:10px;width:45%;
-}
-
-.back {background:#333;margin-top:10px;}
+#volver {display:none;text-align:center;padding:10px;background:#222;}
 </style>
 </head>
 
@@ -67,7 +56,6 @@ button {
 
 <!-- LOGIN -->
 <div id="pantallaLogin">
-  <img src="https://via.placeholder.com/800x200" style="width:100%;height:180px;">
   <h1>A&T KAMIARA S.A.C</h1>
   <p style="color:gray;">Sistema de Inventario</p>
 
@@ -90,11 +78,10 @@ button {
   <div class="menu-card" onclick="abrir('VERANO')">☀️ VERANO</div>
 </div>
 
+<div id="volver" onclick="inicio()">⬅ Volver</div>
+
 <!-- PRODUCTOS -->
 <div id="productos"></div>
-
-<!-- DETALLE -->
-<div id="detalle"></div>
 
 <script>
 
@@ -135,13 +122,13 @@ window.onload = ()=>{
     document.getElementById("barraUsuario").style.display="block";
 
     document.getElementById("infoUser").innerHTML =
-      `👤 <span class="rol">${r}</span> : <span class="user">${u.toUpperCase()}</span>`;
+      `<span class="rol">${r}</span> : <span class="user">${u.toUpperCase()}</span>`;
+  } else {
+    document.getElementById("menu").style.display="none";
   }
 
-  fetch(urlInv)
-    .then(r=>r.json())
-    .then(d=> inventario = d);
-}
+  cargarInventario();
+};
 
 // LOGOUT
 function logout(){
@@ -149,65 +136,46 @@ function logout(){
   location.reload();
 }
 
-// ABRIR CATEGORIA
+// INVENTARIO
+function cargarInventario(){
+  fetch(urlInv)
+  .then(r=>r.json())
+  .then(d=> inventario = d);
+}
+
+// CATEGORIA
 function abrir(cat){
   document.getElementById("menu").style.display="none";
   document.getElementById("productos").style.display="flex";
+  document.getElementById("volver").style.display="block";
 
   let lista = inventario.filter(p=>p.categoria===cat);
 
   let html="";
   lista.forEach(p=>{
     html+=`
-    <div class="card" onclick="verDetalle('${p.producto}')">
-      <img src="${p.imagen}">
-      <h3>${p.producto}</h3>
-    </div>`;
+      <div class="card">
+        <img src="${p.imagen}">
+        <h3>${p.producto}</h3>
+        <p>Stock: ${p.stock}</p>
+        <button onclick="vender('${p.producto}')">Vender</button>
+      </div>
+    `;
   });
 
   document.getElementById("productos").innerHTML=html;
 }
 
-// DETALLE
-function verDetalle(nombre){
-  document.getElementById("productos").style.display="none";
-  document.getElementById("detalle").style.display="block";
-
-  let items = inventario.filter(p=>p.producto===nombre);
-
-  let html=`<h2>${nombre}</h2>
-  <img src="${items[0].imagen}" style="width:100%;border-radius:10px;">`;
-
-  html+=`<div class="tallas">`;
-
-  items.forEach(p=>{
-    html+=`
-    <div class="talla-card">
-      <h4>Talla ${p.talla}</h4>
-      <p>Stock: ${p.stock}</p>
-      <p>Unidad: S/${p.unidad}</p>
-      <p>Docena: S/${p.docena}</p>
-      <p>Caja: S/${p.cajon}</p>
-      <p>Ciento: S/${p.ciento}</p>
-      <button onclick="comprar('${p.producto}','${p.talla}')">Comprar</button>
-    </div>`;
-  });
-
-  html+=`</div>
-  <button class="back" onclick="volver()">⬅ Volver</button>`;
-
-  document.getElementById("detalle").innerHTML=html;
-}
-
 // VOLVER
-function volver(){
-  document.getElementById("detalle").style.display="none";
-  document.getElementById("productos").style.display="flex";
+function inicio(){
+  document.getElementById("menu").style.display="flex";
+  document.getElementById("productos").style.display="none";
+  document.getElementById("volver").style.display="none";
 }
 
-// COMPRAR
-function comprar(prod,talla){
-  alert("Venta: "+prod+" - Talla "+talla);
+// VENDER
+function vender(prod){
+  alert("Venta: " + prod);
 }
 
 </script>
