@@ -8,7 +8,7 @@
 body {background:#0b0b0b;color:white;font-family:Arial;margin:0;max-width:500px;margin:auto;}
 
 /* LOGIN */
-#login {
+#pantallaLogin {
   display:flex;flex-direction:column;justify-content:center;
   align-items:center;height:100vh;text-align:center;
   position:fixed;width:100%;background:#0b0b0b;z-index:999;
@@ -66,7 +66,7 @@ button {
 <body>
 
 <!-- LOGIN -->
-<div id="login">
+<div id="pantallaLogin">
   <img src="https://via.placeholder.com/800x200" style="width:100%;height:180px;">
   <h1>A&T KAMIARA S.A.C</h1>
   <p style="color:gray;">Sistema de Inventario</p>
@@ -74,7 +74,7 @@ button {
   <input id="usuario" placeholder="Usuario">
   <input id="password" type="password" placeholder="Contraseña">
 
-  <button onclick="login()">Entrar</button>
+  <button onclick="iniciarSesion()">Entrar</button>
   <p id="errorLogin" style="color:red;"></p>
 </div>
 
@@ -112,16 +112,16 @@ const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUD
 let inventario = [];
 
 // LOGIN
-function login(){
-  const u = usuario.value.toLowerCase();
-  const p = password.value;
+function iniciarSesion(){
+  const u = document.getElementById("usuario").value.toLowerCase();
+  const p = document.getElementById("password").value;
 
   if(usuarios[u] && usuarios[u].pass === p){
     localStorage.setItem("usuario", u);
     localStorage.setItem("rol", usuarios[u].rol);
     location.reload();
   } else {
-    errorLogin.innerText="Datos incorrectos";
+    document.getElementById("errorLogin").innerText="Datos incorrectos";
   }
 }
 
@@ -131,13 +131,16 @@ window.onload = ()=>{
   const r = localStorage.getItem("rol");
 
   if(u && r){
-    login.style.display="none";
-    barraUsuario.style.display="block";
+    document.getElementById("pantallaLogin").style.display="none";
+    document.getElementById("barraUsuario").style.display="block";
 
-    infoUser.innerHTML = `👤 <span class="rol">${r}</span> : <span class="user">${u.toUpperCase()}</span>`;
+    document.getElementById("infoUser").innerHTML =
+      `👤 <span class="rol">${r}</span> : <span class="user">${u.toUpperCase()}</span>`;
   }
 
-  fetch(urlInv).then(r=>r.json()).then(d=>inventario=d);
+  fetch(urlInv)
+    .then(r=>r.json())
+    .then(d=> inventario = d);
 }
 
 // LOGOUT
@@ -148,8 +151,8 @@ function logout(){
 
 // ABRIR CATEGORIA
 function abrir(cat){
-  menu.style.display="none";
-  productos.style.display="flex";
+  document.getElementById("menu").style.display="none";
+  document.getElementById("productos").style.display="flex";
 
   let lista = inventario.filter(p=>p.categoria===cat);
 
@@ -162,13 +165,13 @@ function abrir(cat){
     </div>`;
   });
 
-  productos.innerHTML=html;
+  document.getElementById("productos").innerHTML=html;
 }
 
 // DETALLE
 function verDetalle(nombre){
-  productos.style.display="none";
-  detalle.style.display="block";
+  document.getElementById("productos").style.display="none";
+  document.getElementById("detalle").style.display="block";
 
   let items = inventario.filter(p=>p.producto===nombre);
 
@@ -193,13 +196,13 @@ function verDetalle(nombre){
   html+=`</div>
   <button class="back" onclick="volver()">⬅ Volver</button>`;
 
-  detalle.innerHTML=html;
+  document.getElementById("detalle").innerHTML=html;
 }
 
 // VOLVER
 function volver(){
-  detalle.style.display="none";
-  productos.style.display="flex";
+  document.getElementById("detalle").style.display="none";
+  document.getElementById("productos").style.display="flex";
 }
 
 // COMPRAR
