@@ -5,15 +5,74 @@
 <title>A&T KAMIARA</title>
 
 <style>
-body {background:#0b0b0b;color:white;font-family:Arial;margin:0;}
+body {
+  background:linear-gradient(135deg,#0b0b0b,#1a1a1a);
+  color:white;
+  font-family:Arial;
+  margin:0;
+}
 
+/* LOGIN PRO */
+#login {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+.login-box {
+  background:#111;
+  padding:25px;
+  border-radius:20px;
+  width:80%;
+  max-width:300px;
+  box-shadow:0 0 20px rgba(255,0,0,0.2);
+  text-align:center;
+}
+
+.login-box img {
+  width:100px;
+  border-radius:20px;
+  margin-bottom:10px;
+}
+
+.login-box input {
+  width:90%;
+  padding:10px;
+  margin:8px 0;
+  border:none;
+  border-radius:10px;
+  background:#222;
+  color:white;
+}
+
+.login-box button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.login-box button:hover {
+  background:#ff2a2a;
+}
+
+#userInfo {
+  text-align:center;
+  margin-top:10px;
+}
+
+/* RESTO IGUAL */
 #portada {text-align:center;}
 #portada img {width:100%;height:200px;object-fit:cover;}
 .titulo {font-size:22px;margin-top:10px;}
 .sub {color:gray;}
-
-#login {text-align:center;padding:20px;}
-#userInfo {text-align:center;margin-top:10px;}
 
 #menu {display:flex;flex-wrap:wrap;justify-content:center;}
 .menu-card {
@@ -41,34 +100,35 @@ button {
 
 <!-- LOGIN -->
 <div id="login">
-  <img src="https://via.placeholder.com/150" style="width:120px;border-radius:20px;">
-  <h3>Iniciar Sesión</h3>
+  <div class="login-box">
+    <img src="https://via.placeholder.com/150">
+    <h3>Bienvenido</h3>
 
-  <input id="usuario" placeholder="Usuario"><br><br>
-  <input id="password" type="password" placeholder="Contraseña"><br><br>
+    <input id="usuario" placeholder="Usuario">
+    <input id="password" type="password" placeholder="Contraseña">
 
-  <button onclick="guardarUsuario()">Entrar</button>
+    <button onclick="guardarUsuario()">Entrar</button>
+  </div>
 </div>
+
+<div id="app" style="display:none;">
 
 <div id="userInfo"></div>
 
 <div style="text-align:center;">
-  <button onclick="cerrarSesion()" id="logoutBtn" style="display:none;background:#444;">Cerrar Sesión</button>
+  <button onclick="cerrarSesion()" id="logoutBtn" style="background:#444;">Cerrar Sesión</button>
 </div>
 
-<!-- PANEL BTN -->
 <div id="panelBtn" style="display:none;">
   <button onclick="abrirPanel()">⚙️ PANEL ADMIN</button>
 </div>
 
-<!-- PORTADA -->
 <div id="portada">
   <img src="https://via.placeholder.com/800x200">
   <div class="titulo">A&T KAMIARA S.A.C.</div>
   <div class="sub">Control de Inventario</div>
 </div>
 
-<!-- MENU -->
 <div id="menu">
   <div class="menu-card" onclick="abrir('INVIERNO')">❄️ INVIERNO</div>
   <div class="menu-card" onclick="abrir('VERANO')">☀️ VERANO</div>
@@ -82,7 +142,6 @@ button {
 <div id="volver" onclick="inicio()">⬅ Volver</div>
 <div id="productos"></div>
 
-<!-- PANEL -->
 <div id="panel">
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
@@ -91,7 +150,6 @@ button {
   <button onclick="inicio()">⬅ Volver</button>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard">
   <h2>📊 Dashboard</h2>
 
@@ -110,18 +168,9 @@ button {
   <button onclick="inicio()">⬅ Volver</button>
 </div>
 
+</div>
+
 <script>
-// CONFIG
-const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
-const urlVentas = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/VENTAS";
-
-const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeoXDQp-aMlsrDCrq1r42QybYUgL-hdi1PiIWpRgnTc2A0STg/viewform";
-
-const ENTRY_PRODUCTO = "entry.1002750291";
-const ENTRY_TIPO = "entry.112461346";
-const ENTRY_CANTIDAD = "entry.838577118";
-const ENTRY_VENDEDOR = "entry.618694440";
-
 // USUARIOS
 const usuariosSistema = {
   "luis": "123",
@@ -132,11 +181,6 @@ const usuariosSistema = {
 };
 
 const admins = ["dante"];
-
-const FORM_ADMIN = "https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
-const SHEETS_VENTAS = "https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
-
-let inventario = [];
 
 // LOGIN
 function guardarUsuario(){
@@ -156,25 +200,47 @@ function cerrarSesion(){
   location.reload();
 }
 
+// CONTROL TOTAL UI
 window.onload = ()=>{
   const user = localStorage.getItem("usuario");
 
   if(user){
     document.getElementById("login").style.display="none";
-    document.getElementById("logoutBtn").style.display="block";
+    document.getElementById("app").style.display="block";
 
-    const esAdmin = admins.includes(user.toLowerCase());
+    const esAdmin = admins.includes(user);
 
     document.getElementById("userInfo").innerHTML =
-      `<span style="color:blue;">Usuario:</span> 
-       <span style="color:lime;">${user}</span>
+      `<span style="color:#00aaff;">Usuario:</span> 
+       <span style="color:#00ff88;">${user}</span>
        ${esAdmin ? " 🔑 ADMIN" : ""}`;
 
     if(esAdmin){
       document.getElementById("panelBtn").style.display="block";
     }
+  } else {
+    document.getElementById("login").style.display="flex";
+    document.getElementById("app").style.display="none";
   }
 };
+
+// TODO TU SISTEMA ORIGINAL ABAJO (NO TOCADO)
+
+// CONFIG
+const urlInv = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
+const urlVentas = "https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/VENTAS";
+
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeoXDQp-aMlsrDCrq1r42QybYUgL-hdi1PiIWpRgnTc2A0STg/viewform";
+
+const ENTRY_PRODUCTO = "entry.1002750291";
+const ENTRY_TIPO = "entry.112461346";
+const ENTRY_CANTIDAD = "entry.838577118";
+const ENTRY_VENDEDOR = "entry.618694440";
+
+const FORM_ADMIN = "https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
+const SHEETS_VENTAS = "https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
+
+let inventario = [];
 
 // CARGAR INVENTARIO
 fetch(urlInv)
