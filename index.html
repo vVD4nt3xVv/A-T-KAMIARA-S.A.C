@@ -17,7 +17,8 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-  height:100vh;
+  min-height:100vh;
+  padding-top:40px;
 }
 
 .login-box {
@@ -27,7 +28,6 @@ body {
   width:80%;
   max-width:300px;
   text-align:center;
-  box-shadow:0 0 20px rgba(255,0,0,0.2);
 }
 
 .login-box input {
@@ -51,25 +51,62 @@ body {
 
 #errorLogin {color:#ff4d4d;font-size:13px;}
 
-/* SISTEMA */
+/* HEADER */
 #userInfo {text-align:center;margin-top:10px;}
 
 #portada img {width:100%;height:200px;object-fit:cover;}
 .titulo {text-align:center;font-size:22px;}
 .sub {text-align:center;color:gray;}
 
-#menu {display:flex;flex-wrap:wrap;justify-content:center;}
-.menu-card {
-  width:40%;margin:10px;padding:10px;
-  border-radius:15px;background:#111;text-align:center;
+/* MENU */
+.grid-menu {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
 }
 
-#productos {display:none;flex-wrap:wrap;justify-content:center;}
-.card {
-  width:45%;margin:10px;padding:10px;
-  border-radius:15px;background:#111;
+.menu-card {
+  background:#111;
+  border-radius:15px;
+  overflow:hidden;
+  text-align:center;
+  cursor:pointer;
 }
-.card img {width:100%;border-radius:10px;}
+
+.menu-card img {
+  width:100%;
+  height:120px;
+  object-fit:cover;
+}
+
+.menu-card p {
+  margin:5px;
+  font-weight:bold;
+}
+
+/* PRODUCTOS */
+#productos {display:none;flex-wrap:wrap;justify-content:center;}
+
+.card {
+  width:45%;
+  margin:10px;
+  padding:10px;
+  border-radius:15px;
+  background:#111;
+  text-align:center;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.card:hover {transform:scale(1.05);}
+
+.card img {
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:10px;
+}
 
 button {
   width:100%;
@@ -105,8 +142,7 @@ button {
 <div id="userInfo"></div>
 
 <div style="text-align:center;">
-  <button onclick="cerrarSesion()" 
-  style="width:auto;padding:6px 18px;font-size:12px;border-radius:8px;display:inline-block;">
+  <button onclick="cerrarSesion()" style="width:auto;padding:6px 18px;font-size:12px;border-radius:8px;">
   Salir
   </button>
 </div>
@@ -121,38 +157,49 @@ button {
   <div class="sub">Control de Inventario</div>
 </div>
 
-<div id="menu">
-  <div class="menu-card" onclick="abrir('INVIERNO')">❄️ INVIERNO</div>
-  <div class="menu-card" onclick="abrir('VERANO')">☀️ VERANO</div>
-  <div class="menu-card" onclick="abrir('TECNOLOGIA')">💻 TECNOLOGÍA</div>
-  <div class="menu-card" onclick="abrir('OTONO')">🍂 OTOÑO</div>
-  <div class="menu-card" onclick="abrir('NAVIDAD')">🎄 NAVIDAD</div>
-  <div class="menu-card" onclick="abrir('JUGUETES')">🧸 JUGUETES</div>
-  <div class="menu-card" onclick="abrir('OTROS')">📦 OTROS</div>
+<!-- MENU -->
+<div id="menu" class="grid-menu">
+
+  <div class="menu-card" onclick="abrir('INVIERNO')">
+    <img src="https://i.imgur.com/0rZ9F9G.jpg">
+    <p>INVIERNO</p>
+  </div>
+
+  <div class="menu-card" onclick="abrir('VERANO')">
+    <img src="https://i.imgur.com/qIufhof.jpg">
+    <p>VERANO</p>
+  </div>
+
+  <div class="menu-card" onclick="abrir('TECNOLOGIA')">
+    <img src="https://i.imgur.com/2DhmtJ4.jpg">
+    <p>TECNOLOGÍA</p>
+  </div>
+
+  <div class="menu-card" onclick="abrir('OTONO')">
+    <img src="https://i.imgur.com/Y7mT4bT.jpg">
+    <p>OTOÑO</p>
+  </div>
+
+  <div class="menu-card" onclick="abrir('NAVIDAD')">
+    <img src="https://i.imgur.com/YT6XGkZ.jpg">
+    <p>NAVIDAD</p>
+  </div>
+
+  <div class="menu-card" onclick="abrir('JUGUETES')">
+    <img src="https://i.imgur.com/d2P6PqH.jpg">
+    <p>JUGUETES</p>
+  </div>
+
 </div>
 
 <div id="volver" onclick="inicio()">⬅ Volver</div>
 <div id="productos"></div>
 
+<!-- PANEL -->
 <div id="panel">
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
   <button onclick="verVentas()">📊 Ver Ventas</button>
-  <button onclick="abrirDashboard()">📊 Dashboard</button>
-  <button onclick="inicio()">⬅ Volver</button>
-</div>
-
-<div id="dashboard">
-  <h2>📊 Dashboard</h2>
-  <p id="totalVentas"></p>
-  <p id="ganancias"></p>
-
-  <h3>🏆 Top Productos</h3>
-  <ul id="topProductos"></ul>
-
-  <h3>⚠️ Stock Bajo</h3>
-  <ul id="alertas"></ul>
-
   <button onclick="inicio()">⬅ Volver</button>
 </div>
 
@@ -160,14 +207,14 @@ button {
 
 <script>
 
-// ===== USUARIOS =====
+// USUARIOS
 const usuariosSistema = {
   luis:"123", katy:"123", katherine:"123",
   richard:"123", dante:"admin123"
 };
 const admins = ["dante"];
 
-// ===== LOGIN =====
+// LOGIN
 function guardarUsuario(){
   const user = usuario.value.toLowerCase().trim();
   const pass = password.value;
@@ -185,7 +232,7 @@ function cerrarSesion(){
   location.reload();
 }
 
-// ===== UI =====
+// UI
 window.onload=()=>{
   window.scrollTo(0,0);
 
@@ -206,7 +253,7 @@ window.onload=()=>{
   }
 };
 
-// ===== INVENTARIO (FLEXIBLE) =====
+// INVENTARIO FLEXIBLE
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
@@ -231,7 +278,7 @@ fetch(urlInv)
   });
 });
 
-// ===== CATEGORÍAS =====
+// MENU
 function abrir(cat){
   menu.style.display="none";
   productos.style.display="flex";
@@ -241,31 +288,22 @@ function abrir(cat){
 }
 
 function inicio(){
-  menu.style.display="flex";
+  menu.style.display="grid";
   productos.style.display="none";
   panel.style.display="none";
-  dashboard.style.display="none";
   volver.style.display="none";
 }
 
-// ===== PRODUCTOS =====
+// PRODUCTOS
 function render(lista){
   let html="";
 
   lista.forEach(p=>{
     html+=`
-      <div class="card">
+      <div class="card" onclick="verProducto('${encodeURIComponent(JSON.stringify(p))}')">
         <img src="${p.imagen}">
         <h3>${p.producto}</h3>
-        <p>📦 ${p.stock}</p>
-
-        <p>Unidad: S/ ${p.unidad}</p>
-        <p>Docena: S/ ${p.docena}</p>
-        <p>Cajón: S/ ${p.cajon}</p>
-
-        <button onclick="vender('${p.producto}','UNIDAD')">Unidad</button>
-        <button onclick="vender('${p.producto}','DOCENA')">Docena</button>
-        <button onclick="vender('${p.producto}','CAJON')">Cajón</button>
+        <p style="color:lime;">S/ ${p.unidad}</p>
       </div>
     `;
   });
@@ -273,22 +311,45 @@ function render(lista){
   productos.innerHTML = html;
 }
 
-// ===== VENTAS =====
-const FORM="https://docs.google.com/forms/d/e/1FAIpQLSeoXDQp-aMlsrDCrq1r42QybYUgL-hdi1PiIWpRgnTc2A0STg/viewform";
-const ENTRY_PRODUCTO="entry.1002750291";
-const ENTRY_TIPO="entry.112461346";
-const ENTRY_CANTIDAD="entry.838577118";
-const ENTRY_VENDEDOR="entry.618694440";
+// DETALLE
+function verProducto(data){
+  const p = JSON.parse(decodeURIComponent(data));
 
-function vender(prod,tipo){
-  const vendedor=localStorage.getItem("usuario")||"SinNombre";
+  productos.innerHTML = `
+    <div style="padding:15px;">
+      <img src="${p.imagen}" style="width:100%;border-radius:15px;">
+      <h2>${p.producto}</h2>
 
-  const link=`${FORM}?${ENTRY_PRODUCTO}=${encodeURIComponent(prod)}&${ENTRY_TIPO}=${tipo}&${ENTRY_CANTIDAD}=1&${ENTRY_VENDEDOR}=${encodeURIComponent(vendedor)}`;
+      <table style="width:100%;text-align:center;background:#111;border-radius:10px;">
+        <tr>
+          <th>TALLA</th>
+          <th>STOCK</th>
+          <th>PRECIO</th>
+          <th>DOCENA</th>
+          <th>CAJÓN</th>
+        </tr>
+        <tr>
+          <td>S</td>
+          <td>${p.stock}</td>
+          <td>S/ ${p.unidad}</td>
+          <td>S/ ${p.docena}</td>
+          <td>S/ ${p.cajon}</td>
+        </tr>
+        <tr>
+          <td>M</td>
+          <td>${p.stock}</td>
+          <td>S/ ${p.unidad}</td>
+          <td>S/ ${p.docena}</td>
+          <td>S/ ${p.cajon}</td>
+        </tr>
+      </table>
 
-  window.open(link,"_blank");
+      <button onclick="inicio()">⬅ Volver</button>
+    </div>
+  `;
 }
 
-// ===== PANEL =====
+// PANEL
 const FORM_ADMIN="https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
 const SHEETS_VENTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
 
