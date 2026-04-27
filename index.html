@@ -105,10 +105,9 @@ button {
 <div id="userInfo"></div>
 
 <div style="text-align:center;">
-  <button onclick="cerrarSesion()" style="
-    width:auto;padding:6px 18px;font-size:12px;
-    border-radius:8px;display:inline-block;">
-    Salir
+  <button onclick="cerrarSesion()" 
+  style="width:auto;padding:6px 18px;font-size:12px;border-radius:8px;display:inline-block;">
+  Salir
   </button>
 </div>
 
@@ -147,9 +146,13 @@ button {
   <h2>📊 Dashboard</h2>
   <p id="totalVentas"></p>
   <p id="ganancias"></p>
+
+  <h3>🏆 Top Productos</h3>
   <ul id="topProductos"></ul>
-  <canvas id="graficoDias" height="200"></canvas>
+
+  <h3>⚠️ Stock Bajo</h3>
   <ul id="alertas"></ul>
+
   <button onclick="inicio()">⬅ Volver</button>
 </div>
 
@@ -157,18 +160,14 @@ button {
 
 <script>
 
-// =====================
-// 🔐 USUARIOS
-// =====================
+// ===== USUARIOS =====
 const usuariosSistema = {
   luis:"123", katy:"123", katherine:"123",
   richard:"123", dante:"admin123"
 };
 const admins = ["dante"];
 
-// =====================
-// 🔐 LOGIN
-// =====================
+// ===== LOGIN =====
 function guardarUsuario(){
   const user = usuario.value.toLowerCase().trim();
   const pass = password.value;
@@ -186,10 +185,10 @@ function cerrarSesion(){
   location.reload();
 }
 
-// =====================
-// 🎯 UI CONTROL
-// =====================
+// ===== UI =====
 window.onload=()=>{
+  window.scrollTo(0,0);
+
   const user=localStorage.getItem("usuario");
 
   login.style.display = user ? "none":"flex";
@@ -197,6 +196,7 @@ window.onload=()=>{
 
   if(user){
     const esAdmin = admins.includes(user);
+
     userInfo.innerHTML =
       `<span style="color:#00aaff;">USUARIO:</span>
        <span style="color:#00ff88;">${user.toUpperCase()}</span>
@@ -206,31 +206,38 @@ window.onload=()=>{
   }
 };
 
-// =====================
-// 📦 INVENTARIO
-// =====================
+// ===== INVENTARIO (FLEXIBLE) =====
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
 fetch(urlInv)
 .then(r=>r.json())
 .then(d=>{
-  inventario=d.map(p=>{
+  inventario = d.map(p=>{
     let o={};
-    Object.keys(p).forEach(k=>o[k.trim().toLowerCase()]=p[k]);
-    return o;
+    Object.keys(p).forEach(k=>{
+      o[k.trim().toLowerCase()] = p[k];
+    });
+
+    return {
+      producto:o.producto||"",
+      stock:o.stock||0,
+      unidad:o.unidad||0,
+      docena:o.docena||0,
+      cajon:o.cajon||0,
+      imagen:o.imagen||"",
+      categoria:(o.categoria||"").toUpperCase()
+    };
   });
 });
 
-// =====================
-// 📂 CATEGORÍAS
-// =====================
+// ===== CATEGORÍAS =====
 function abrir(cat){
   menu.style.display="none";
   productos.style.display="flex";
   volver.style.display="block";
 
-  render(inventario.filter(p=>(p.categoria||"").toUpperCase()===cat));
+  render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
 }
 
 function inicio(){
@@ -241,27 +248,32 @@ function inicio(){
   volver.style.display="none";
 }
 
-// =====================
-// 🛒 PRODUCTOS
-// =====================
+// ===== PRODUCTOS =====
 function render(lista){
-  productos.innerHTML=lista.map(p=>`
-    <div class="card">
-      <img src="${p.imagen||''}">
-      <h3>${p.producto}</h3>
-      <p>📦 ${p.stock}</p>
-      <p>Unidad: S/ ${p.unidad}</p>
-      <p>Docena: S/ ${p.docena}</p>
-      <p>Cajón: S/ ${p.cajon}</p>
-      <button onclick="vender('${p.producto}','UNIDAD')">Unidad</button>
-      <button onclick="vender('${p.producto}','DOCENA')">Docena</button>
-      <button onclick="vender('${p.producto}','CAJON')">Cajón</button>
-    </div>`).join("");
+  let html="";
+
+  lista.forEach(p=>{
+    html+=`
+      <div class="card">
+        <img src="${p.imagen}">
+        <h3>${p.producto}</h3>
+        <p>📦 ${p.stock}</p>
+
+        <p>Unidad: S/ ${p.unidad}</p>
+        <p>Docena: S/ ${p.docena}</p>
+        <p>Cajón: S/ ${p.cajon}</p>
+
+        <button onclick="vender('${p.producto}','UNIDAD')">Unidad</button>
+        <button onclick="vender('${p.producto}','DOCENA')">Docena</button>
+        <button onclick="vender('${p.producto}','CAJON')">Cajón</button>
+      </div>
+    `;
+  });
+
+  productos.innerHTML = html;
 }
 
-// =====================
-// 💰 VENTAS
-// =====================
+// ===== VENTAS =====
 const FORM="https://docs.google.com/forms/d/e/1FAIpQLSeoXDQp-aMlsrDCrq1r42QybYUgL-hdi1PiIWpRgnTc2A0STg/viewform";
 const ENTRY_PRODUCTO="entry.1002750291";
 const ENTRY_TIPO="entry.112461346";
@@ -276,9 +288,7 @@ function vender(prod,tipo){
   window.open(link,"_blank");
 }
 
-// =====================
-// ⚙️ PANEL
-// =====================
+// ===== PANEL =====
 const FORM_ADMIN="https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
 const SHEETS_VENTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
 
@@ -290,96 +300,6 @@ function abrirPanel(){
 function abrirFormulario(){window.open(FORM_ADMIN)}
 function verVentas(){window.open(SHEETS_VENTAS)}
 
-// =====================
-// 📊 DASHBOARD
-// =====================
-const urlVentas="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/VENTAS";
-
-function abrirDashboard(){
-  panel.style.display="none";
-  dashboard.style.display="block";
-  cargarDashboard();
-}
-
-function cargarDashboard(){
-  fetch(urlVentas)
-  .then(r=>r.json())
-  .then(v=>{
-    let total=0,dinero=0,p={},d={};
-
-    v.forEach(x=>{
-      let prod=x.Producto?.toLowerCase(),tipo=x.Tipo?.toLowerCase(),cant=+x.Cantidad||0;
-      total+=cant;
-
-      let item=inventario.find(i=>i.producto.toLowerCase()===prod);
-      let precio=item?(tipo==="unidad"?item.unidad:tipo==="docena"?item.docena:item.cajon):0;
-
-      dinero+=precio*cant;
-      p[prod]=(p[prod]||0)+cant;
-
-      let dia=(x.Fecha||"").split(" ")[0];
-      d[dia]=(d[dia]||0)+cant;
-    });
-
-    totalVentas.innerText="Total: "+total;
-    ganancias.innerText="Ganancias: S/ "+dinero;
-
-    topProductos.innerHTML=Object.entries(p)
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,5)
-      .map(x=>`<li>${x[0]} - ${x[1]}</li>`).join("");
-
-    alertasStock();
-  });
-}
-
-function alertasStock(){
-  alertas.innerHTML=inventario
-    .filter(p=>+p.stock<=5)
-    .map(p=>`<li>${p.producto} (${p.stock})</li>`)
-    .join("");
-}
-</script>
-
-</body>
-</html>ect.values(d);
-  let max=Math.max(...vals,1);
-  let w=c.width/dias.length;
-
-  vals.forEach((v,i)=>{
-    let h=(v/max)*150;
-    ctx.fillStyle="orange";
-    ctx.fillRect(i*w,200-h,w-10,h);
-    ctx.fillStyle="white";
-    ctx.fillText(dias[i], i*w,190);
-  });
-}
-
-function alertasStock(){
-  let ul=document.getElementById("alertas");
-  ul.innerHTML="";
-
-  inventario.forEach(p=>{
-    if(Number(p.stock)<=5){
-      let li=document.createElement("li");
-      li.innerText=p.producto+" (Stock: "+p.stock+")";
-      ul.appendChild(li);
-    }
-  });
-}
-</script>
-
-</body>
-</html>  ul.innerHTML="";
-
-  inventario.forEach(p=>{
-    if(Number(p.stock)<=5){
-      let li=document.createElement("li");
-      li.innerText=p.producto+" (Stock: "+p.stock+")";
-      ul.appendChild(li);
-    }
-  });
-}
 </script>
 
 </body>
