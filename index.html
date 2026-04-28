@@ -110,12 +110,17 @@ body {
   font-weight:bold;
 }
 
-/* PRODUCTOS */
-#productos {display:none;flex-wrap:wrap;justify-content:center;}
+/* PRODUCTOS (2 COLUMNAS) */
+#productos {
+  display:none;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
 
 .card {
-  width:45%;
-  margin:10px;
+  width:100%;
+  margin:0;
   padding:10px;
   border-radius:15px;
   background:#111;
@@ -250,7 +255,7 @@ window.onload=()=>{
   }
 };
 
-// INVENTARIO FLEXIBLE
+// INVENTARIO
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
@@ -278,11 +283,10 @@ fetch(urlInv)
 // MENU
 function abrir(cat){
   menu.style.display="none";
-  productos.style.display="flex";
+  productos.style.display="grid";
 
   render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
 
-  // ✅ BOTÓN VOLVER SOLO EN CATEGORÍA
   productos.innerHTML += `
     <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
   `;
@@ -309,9 +313,11 @@ function render(lista){
   productos.innerHTML = html;
 }
 
-// DETALLE (SE MANTIENE IGUAL)
+// DETALLE
 function verProducto(data){
   const p = JSON.parse(decodeURIComponent(data));
+
+  productos.style.display="block";
 
   productos.innerHTML = `
     <div>
