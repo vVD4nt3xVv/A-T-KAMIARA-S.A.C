@@ -7,7 +7,7 @@
 
 <style>
 body {
-  background:#0b0b0b;
+  background:linear-gradient(135deg,#0b0b0b,#1a1a1a);
   color:white;
   font-family:Arial;
   margin:0;
@@ -21,39 +21,40 @@ body {
   align-items:center;
   justify-content:center;
   height:100vh;
+  padding:10px;
 }
 
 .login-box {
   background:#111;
   padding:20px;
-  border-radius:15px;
-  width:90%;
-  max-width:300px;
+  border-radius:20px;
+  width:100%;
+  max-width:320px;
   text-align:center;
 }
 
 .login-box input {
   width:100%;
   padding:10px;
-  margin:5px 0;
+  margin:6px 0;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
+  background:#222;
+  color:white;
 }
 
 .login-box button {
   width:100%;
   padding:10px;
-  background:red;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
+  background:red;
   color:white;
 }
 
-#errorLogin {color:red;font-size:13px;}
+#errorLogin {color:#ff4d4d;font-size:13px;}
 
-/* APP */
-#app {display:none;}
-
+/* HEADER */
 #userInfo {text-align:center;margin-top:10px;}
 
 .top-buttons {
@@ -63,11 +64,26 @@ body {
   margin:10px;
 }
 
-.btn-salir {background:red;padding:6px 15px;font-size:12px;}
-.btn-admin {background:blue;padding:6px 15px;font-size:12px;}
+.btn-salir {
+  background:red;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
+}
 
-#portada img {width:100%;height:180px;object-fit:cover;}
+.btn-admin {
+  background:#007bff;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
+}
 
+/* PORTADA */
+#portada img {width:100%;height:200px;object-fit:cover;}
+.titulo {text-align:center;font-size:22px;}
+.sub {text-align:center;color:gray;}
+
+/* MENU */
 .grid-menu {
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -77,9 +93,10 @@ body {
 
 .menu-card {
   background:#111;
-  border-radius:10px;
+  border-radius:15px;
   overflow:hidden;
   text-align:center;
+  cursor:pointer;
 }
 
 .menu-card img {
@@ -88,172 +105,49 @@ body {
   object-fit:cover;
 }
 
+.menu-card p {
+  margin:5px;
+  font-weight:bold;
+}
+
+/* PRODUCTOS */
 #productos {display:none;flex-wrap:wrap;justify-content:center;}
 
 .card {
   width:45%;
   margin:10px;
   padding:10px;
+  border-radius:15px;
   background:#111;
-  border-radius:10px;
   text-align:center;
+  cursor:pointer;
 }
 
-.card img {width:100%;height:120px;object-fit:cover;}
-
-#volver {display:none;padding:10px;}
-#volver button {background:red;width:100%;padding:10px;}
-
-#panel {display:none;padding:20px;}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div id="login">
-  <div class="login-box">
-    <h3>Login</h3>
-    <input id="usuario" placeholder="Usuario">
-    <input id="password" type="password" placeholder="Contraseña">
-    <button onclick="guardarUsuario()">Entrar</button>
-    <p id="errorLogin"></p>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app">
-
-<div id="userInfo"></div>
-
-<div class="top-buttons">
-  <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
-  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()" style="display:none;">Panel</button>
-</div>
-
-<div id="portada">
-  <img src="https://via.placeholder.com/800x200">
-</div>
-
-<div id="menu" class="grid-menu">
-  <div class="menu-card" onclick="abrir('INVIERNO')"><img src="https://i.imgur.com/0rZ9F9G.jpg"><p>INVIERNO</p></div>
-  <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
-</div>
-
-<div id="volver">
-  <button onclick="inicio()">⬅ Volver</button>
-</div>
-
-<div id="productos"></div>
-
-<div id="panel">
-  <h2>Panel</h2>
-  <button onclick="inicio()">⬅ Volver</button>
-</div>
-
-</div>
-
-<script>
-
-// USUARIOS
-const usuariosSistema = {
-  luis:"123", katy:"123", katherine:"123",
-  richard:"123", dante:"admin123"
-};
-const admins=["dante"];
-
-// LOGIN
-function guardarUsuario(){
-  const user = document.getElementById("usuario").value.toLowerCase();
-  const pass = document.getElementById("password").value;
-
-  if(!usuariosSistema[user]){
-    errorLogin.innerText="Usuario no existe";
-    return;
-  }
-
-  if(usuariosSistema[user]!==pass){
-    errorLogin.innerText="Contraseña incorrecta";
-    return;
-  }
-
-  localStorage.setItem("usuario",user);
-  cargarUI();
+.card img {
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:10px;
 }
 
-function cerrarSesion(){
-  localStorage.removeItem("usuario");
-  location.reload();
+/* BOTONES */
+button {
+  width:100%;
+  margin-top:5px;
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
 }
 
-// UI
-function cargarUI(){
-  const user = localStorage.getItem("usuario");
-
-  if(user){
-    login.style.display="none";
-    app.style.display="block";
-
-    const esAdmin = admins.includes(user);
-
-    userInfo.innerHTML =
-      `<span style="color:blue;">USUARIO:</span>
-       <span style="color:lime;">${user.toUpperCase()}</span>`;
-
-    if(esAdmin){
-      panelBtn.style.display="inline-block";
-    }
-  }else{
-    login.style.display="flex";
-    app.style.display="none";
-  }
+/* BOTÓN VOLVER */
+#volver {
+  display:none;
+  padding:10px;
 }
-
-window.onload=cargarUI;
-
-// INVENTARIO
-let inventario=[];
-
-// MENU
-function abrir(cat){
-  menu.style.display="none";
-  productos.style.display="flex";
-  volver.style.display="block";
-
-  render(inventario);
-}
-
-function inicio(){
-  menu.style.display="grid";
-  productos.style.display="none";
-  volver.style.display="none";
-  panel.style.display="none";
-}
-
-// PRODUCTOS
-function render(lista){
-  let html="";
-  lista.forEach(p=>{
-    html+=`
-      <div class="card">
-        <img src="${p.imagen||''}">
-        <h3>${p.producto||'Producto'}</h3>
-      </div>
-    `;
-  });
-  productos.innerHTML=html;
-}
-
-// PANEL
-function abrirPanel(){
-  menu.style.display="none";
-  panel.style.display="block";
-}
-
-</script>
-
-</body>
-</html> background:red;
+#volver button {
+  background:red;
 }
 
 /* SECCIONES */
@@ -451,6 +345,19 @@ function verProducto(data){
 // PANEL
 const FORM_ADMIN="https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
 const SHEETS_VENTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
+
+function abrirPanel(){
+  menu.style.display="none";
+  panel.style.display="block";
+}
+
+function abrirFormulario(){window.open(FORM_ADMIN)}
+function verVentas(){window.open(SHEETS_VENTAS)}
+
+</script>
+
+</body>
+</html>NTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
 
 function abrirPanel(){
   menu.style.display="none";
