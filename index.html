@@ -141,13 +141,13 @@ button {
   color:white;
 }
 
-/* BOTÓN ABAJO */
+/* BOTONES ABAJO */
 .bottom-btn {
   margin-top:20px;
 }
 
 /* SECCIONES */
-#panel, #dashboard {display:none;padding:20px;}
+#volver, #panel, #dashboard {display:none;padding:20px;}
 </style>
 </head>
 
@@ -204,9 +204,6 @@ button {
 
 <script>
 
-// CONTROL VISTA
-let enDetalle = false;
-
 // USUARIOS
 const usuariosSistema = {
   luis:"123", katy:"123", katherine:"123",
@@ -234,6 +231,8 @@ function cerrarSesion(){
 
 // UI
 window.onload=()=>{
+  window.scrollTo(0,0);
+
   const user=localStorage.getItem("usuario");
 
   login.style.display = user ? "none":"flex";
@@ -244,13 +243,14 @@ window.onload=()=>{
 
     userInfo.innerHTML =
       `<span style="color:#00aaff;">USUARIO:</span>
-       <span style="color:#00ff88;">${user.toUpperCase()}</span>`;
+       <span style="color:#00ff88;">${user.toUpperCase()}</span>
+       ${esAdmin?" 🔑 ADMIN":""}`;
 
     if(esAdmin) panelBtn.style.display="inline-block";
   }
 };
 
-// INVENTARIO
+// INVENTARIO FLEXIBLE
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
@@ -280,12 +280,12 @@ function abrir(cat){
   menu.style.display="none";
   productos.style.display="flex";
 
-  enDetalle = false;
-
   render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
 
-  // AGREGAR BOTÓN VOLVER SOLO AQUÍ
-  productos.innerHTML += `<button class="bottom-btn" onclick="inicio()">⬅ Volver</button>`;
+  // ✅ BOTÓN VOLVER SOLO EN CATEGORÍA
+  productos.innerHTML += `
+    <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+  `;
 }
 
 function inicio(){
@@ -309,10 +309,9 @@ function render(lista){
   productos.innerHTML = html;
 }
 
-// DETALLE (SIN BOTÓN)
+// DETALLE (SE MANTIENE IGUAL)
 function verProducto(data){
   const p = JSON.parse(decodeURIComponent(data));
-  enDetalle = true;
 
   productos.innerHTML = `
     <div>
@@ -330,6 +329,8 @@ function verProducto(data){
           <td>M</td><td>${p.stock}</td><td>S/ ${p.unidad}</td><td>S/ ${p.docena}</td><td>S/ ${p.cajon}</td>
         </tr>
       </table>
+
+      <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
     </div>
   `;
 }
