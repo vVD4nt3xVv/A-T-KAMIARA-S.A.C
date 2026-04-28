@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A&T KAMIARA</title>
 
 <style>
@@ -10,6 +11,8 @@ body {
   color:white;
   font-family:Arial;
   margin:0;
+  max-width:480px;
+  margin:auto;
 }
 
 /* LOGIN */
@@ -17,23 +20,23 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height:100vh;
-  padding-top:40px;
+  height:100vh;
+  padding:10px;
 }
 
 .login-box {
   background:#111;
-  padding:25px;
+  padding:20px;
   border-radius:20px;
-  width:80%;
-  max-width:300px;
+  width:100%;
+  max-width:320px;
   text-align:center;
 }
 
 .login-box input {
-  width:90%;
+  width:100%;
   padding:10px;
-  margin:8px 0;
+  margin:6px 0;
   border:none;
   border-radius:10px;
   background:#222;
@@ -54,6 +57,28 @@ body {
 /* HEADER */
 #userInfo {text-align:center;margin-top:10px;}
 
+.top-buttons {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:10px;
+}
+
+.btn-salir {
+  background:red;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
+}
+
+.btn-admin {
+  background:#007bff;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
+}
+
+/* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
 .titulo {text-align:center;font-size:22px;}
 .sub {text-align:center;color:gray;}
@@ -96,10 +121,7 @@ body {
   background:#111;
   text-align:center;
   cursor:pointer;
-  transition:0.3s;
 }
-
-.card:hover {transform:scale(1.05);}
 
 .card img {
   width:100%;
@@ -108,6 +130,7 @@ body {
   border-radius:10px;
 }
 
+/* BOTONES GENERALES */
 button {
   width:100%;
   margin-top:5px;
@@ -118,8 +141,13 @@ button {
   color:white;
 }
 
-#volver {display:none;text-align:center;padding:10px;background:#222;}
-#panel, #dashboard {display:none;padding:20px;}
+/* BOTONES ABAJO */
+.bottom-btn {
+  margin-top:20px;
+}
+
+/* SECCIONES */
+#volver, #panel, #dashboard {display:none;padding:20px;}
 </style>
 </head>
 
@@ -141,14 +169,9 @@ button {
 
 <div id="userInfo"></div>
 
-<div style="text-align:center;">
-  <button onclick="cerrarSesion()" style="width:auto;padding:6px 18px;font-size:12px;border-radius:8px;">
-  Salir
-  </button>
-</div>
-
-<div id="panelBtn" style="display:none;">
-  <button onclick="abrirPanel()">⚙️ PANEL ADMIN</button>
+<div class="top-buttons">
+  <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()" style="display:none;">Panel</button>
 </div>
 
 <div id="portada">
@@ -159,40 +182,14 @@ button {
 
 <!-- MENU -->
 <div id="menu" class="grid-menu">
-
-  <div class="menu-card" onclick="abrir('INVIERNO')">
-    <img src="https://i.imgur.com/0rZ9F9G.jpg">
-    <p>INVIERNO</p>
-  </div>
-
-  <div class="menu-card" onclick="abrir('VERANO')">
-    <img src="https://i.imgur.com/qIufhof.jpg">
-    <p>VERANO</p>
-  </div>
-
-  <div class="menu-card" onclick="abrir('TECNOLOGIA')">
-    <img src="https://i.imgur.com/2DhmtJ4.jpg">
-    <p>TECNOLOGÍA</p>
-  </div>
-
-  <div class="menu-card" onclick="abrir('OTONO')">
-    <img src="https://i.imgur.com/Y7mT4bT.jpg">
-    <p>OTOÑO</p>
-  </div>
-
-  <div class="menu-card" onclick="abrir('NAVIDAD')">
-    <img src="https://i.imgur.com/YT6XGkZ.jpg">
-    <p>NAVIDAD</p>
-  </div>
-
-  <div class="menu-card" onclick="abrir('JUGUETES')">
-    <img src="https://i.imgur.com/d2P6PqH.jpg">
-    <p>JUGUETES</p>
-  </div>
-
+  <div class="menu-card" onclick="abrir('INVIERNO')"><img src="https://i.imgur.com/0rZ9F9G.jpg"><p>INVIERNO</p></div>
+  <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
+  <div class="menu-card" onclick="abrir('TECNOLOGIA')"><img src="https://i.imgur.com/2DhmtJ4.jpg"><p>TECNOLOGÍA</p></div>
+  <div class="menu-card" onclick="abrir('OTONO')"><img src="https://i.imgur.com/Y7mT4bT.jpg"><p>OTOÑO</p></div>
+  <div class="menu-card" onclick="abrir('NAVIDAD')"><img src="https://i.imgur.com/YT6XGkZ.jpg"><p>NAVIDAD</p></div>
+  <div class="menu-card" onclick="abrir('JUGUETES')"><img src="https://i.imgur.com/d2P6PqH.jpg"><p>JUGUETES</p></div>
 </div>
 
-<div id="volver" onclick="inicio()">⬅ Volver</div>
 <div id="productos"></div>
 
 <!-- PANEL -->
@@ -200,7 +197,7 @@ button {
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
   <button onclick="verVentas()">📊 Ver Ventas</button>
-  <button onclick="inicio()">⬅ Volver</button>
+  <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
 </div>
 
 </div>
@@ -249,7 +246,7 @@ window.onload=()=>{
        <span style="color:#00ff88;">${user.toUpperCase()}</span>
        ${esAdmin?" 🔑 ADMIN":""}`;
 
-    if(esAdmin) panelBtn.style.display="block";
+    if(esAdmin) panelBtn.style.display="inline-block";
   }
 };
 
@@ -282,7 +279,6 @@ fetch(urlInv)
 function abrir(cat){
   menu.style.display="none";
   productos.style.display="flex";
-  volver.style.display="block";
 
   render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
 }
@@ -291,13 +287,11 @@ function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
   panel.style.display="none";
-  volver.style.display="none";
 }
 
 // PRODUCTOS
 function render(lista){
   let html="";
-
   lista.forEach(p=>{
     html+=`
       <div class="card" onclick="verProducto('${encodeURIComponent(JSON.stringify(p))}')">
@@ -307,7 +301,6 @@ function render(lista){
       </div>
     `;
   });
-
   productos.innerHTML = html;
 }
 
@@ -316,35 +309,23 @@ function verProducto(data){
   const p = JSON.parse(decodeURIComponent(data));
 
   productos.innerHTML = `
-    <div style="padding:15px;">
+    <div>
       <img src="${p.imagen}" style="width:100%;border-radius:15px;">
       <h2>${p.producto}</h2>
 
       <table style="width:100%;text-align:center;background:#111;border-radius:10px;">
         <tr>
-          <th>TALLA</th>
-          <th>STOCK</th>
-          <th>PRECIO</th>
-          <th>DOCENA</th>
-          <th>CAJÓN</th>
+          <th>TALLA</th><th>STOCK</th><th>PRECIO</th><th>DOCENA</th><th>CAJÓN</th>
         </tr>
         <tr>
-          <td>S</td>
-          <td>${p.stock}</td>
-          <td>S/ ${p.unidad}</td>
-          <td>S/ ${p.docena}</td>
-          <td>S/ ${p.cajon}</td>
+          <td>S</td><td>${p.stock}</td><td>S/ ${p.unidad}</td><td>S/ ${p.docena}</td><td>S/ ${p.cajon}</td>
         </tr>
         <tr>
-          <td>M</td>
-          <td>${p.stock}</td>
-          <td>S/ ${p.unidad}</td>
-          <td>S/ ${p.docena}</td>
-          <td>S/ ${p.cajon}</td>
+          <td>M</td><td>${p.stock}</td><td>S/ ${p.unidad}</td><td>S/ ${p.docena}</td><td>S/ ${p.cajon}</td>
         </tr>
       </table>
 
-      <button onclick="inicio()">⬅ Volver</button>
+      <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
     </div>
   `;
 }
