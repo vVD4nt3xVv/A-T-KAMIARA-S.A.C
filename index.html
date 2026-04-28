@@ -130,7 +130,7 @@ body {
   border-radius:10px;
 }
 
-/* BOTONES GENERALES */
+/* BOTONES */
 button {
   width:100%;
   margin-top:5px;
@@ -141,13 +141,17 @@ button {
   color:white;
 }
 
-/* BOTONES ABAJO */
-.bottom-btn {
-  margin-top:20px;
+/* BOTÓN VOLVER */
+#volver {
+  display:none;
+  padding:10px;
+}
+#volver button {
+  background:red;
 }
 
 /* SECCIONES */
-#volver, #panel, #dashboard {display:none;padding:20px;}
+#panel, #dashboard {display:none;padding:20px;}
 </style>
 </head>
 
@@ -190,6 +194,12 @@ button {
   <div class="menu-card" onclick="abrir('JUGUETES')"><img src="https://i.imgur.com/d2P6PqH.jpg"><p>JUGUETES</p></div>
 </div>
 
+<!-- BOTÓN VOLVER -->
+<div id="volver">
+  <button onclick="inicio()">⬅ Volver</button>
+</div>
+
+<!-- PRODUCTOS -->
 <div id="productos"></div>
 
 <!-- PANEL -->
@@ -197,7 +207,7 @@ button {
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
   <button onclick="verVentas()">📊 Ver Ventas</button>
-  <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+  <button onclick="inicio()">⬅ Volver</button>
 </div>
 
 </div>
@@ -279,6 +289,7 @@ fetch(urlInv)
 function abrir(cat){
   menu.style.display="none";
   productos.style.display="flex";
+  volver.style.display="block";
 
   render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
 }
@@ -287,6 +298,7 @@ function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
   panel.style.display="none";
+  volver.style.display="none";
 }
 
 // PRODUCTOS
@@ -325,7 +337,7 @@ function verProducto(data){
         </tr>
       </table>
 
-      <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+      <button onclick="inicio()">⬅ Volver</button>
     </div>
   `;
 }
