@@ -135,6 +135,20 @@ select {
   padding:5px;
 }
 
+/* TABLA */
+table {
+  width:100%;
+  margin-top:10px;
+  background:#111;
+  border-radius:10px;
+}
+
+th,td {
+  padding:6px;
+  text-align:center;
+  font-size:12px;
+}
+
 /* BOTONES */
 button {
   width:100%;
@@ -293,14 +307,13 @@ function render(lista){
   productos.innerHTML=html;
 }
 
-// DETALLE PRO
+// DETALLE
 function verProducto(id){
 
   const variantes=inventario.filter(p=>p.id==id);
   const p=variantes[0];
 
   const tallas=[...new Set(variantes.map(v=>v.talla))];
-
   const stockTotal=variantes.reduce((a,b)=>a+b.stock,0);
 
   productos.innerHTML=`
@@ -309,28 +322,25 @@ function verProducto(id){
       <h2>${p.producto}</h2>
 
       <div class="fila-opciones">
-        <select id="tallaSelect" onchange="cambiarTalla('${id}')">
-          ${tallas.map(t=>`<option>${t}</option>`).join("")}
-        </select>
+        <div>
+          🧵 TALLAS
+          <select id="tallaSelect" onchange="cambiarTalla('${id}')">
+            ${tallas.map(t=>`<option value="${t}">${t}</option>`).join("")}
+          </select>
+        </div>
 
-        <div>📦 <span id="stockTalla">0</span></div>
-        <div>📊 ${stockTotal}</div>
+        <div>
+          📦 STOCK
+          <span id="stockTalla">0</span>
+        </div>
+
+        <div>
+          📊 TOTAL
+          <span>${stockTotal}</span>
+        </div>
       </div>
 
-      <table>
-        <tr>
-          <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>P.UNIDAD</th><th>P.DOCENA</th>
-        </tr>
-        ${variantes.map(v=>`
-          <tr>
-            <td>${v.talla}</td>
-            <td>${v.color}</td>
-            <td>${v.stock}</td>
-            <td>S/ ${v.unidad}</td>
-            <td>S/ ${v.docena}</td>
-          </tr>
-        `).join("")}
-      </table>
+      <table id="tablaDetalle"></table>
 
       <button onclick="volverLista('${p.categoria}')">⬅ Volver</button>
     </div>
@@ -339,18 +349,37 @@ function verProducto(id){
   cambiarTalla(id);
 }
 
-// STOCK DINÁMICO
+// FILTRO FUNCIONAL
 function cambiarTalla(id){
   const talla=document.getElementById("tallaSelect").value;
 
   const filtrados=inventario.filter(p=>p.id==id && p.talla==talla);
 
   const total=filtrados.reduce((a,b)=>a+b.stock,0);
-
   document.getElementById("stockTalla").innerText=total;
+
+  let filas=`
+    <tr>
+      <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>P.UNIDAD</th><th>P.DOCENA</th>
+    </tr>
+  `;
+
+  filtrados.forEach(v=>{
+    filas+=`
+      <tr>
+        <td>${v.talla}</td>
+        <td>${v.color}</td>
+        <td>${v.stock}</td>
+        <td>S/ ${v.unidad}</td>
+        <td>S/ ${v.docena}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("tablaDetalle").innerHTML=filas;
 }
 
-// VOLVER CORRECTO
+// VOLVER
 function volverLista(cat){
   abrir(cat);
 }
