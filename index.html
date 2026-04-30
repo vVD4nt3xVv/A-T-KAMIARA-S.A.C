@@ -32,7 +32,7 @@ body {
   text-align:center;
 }
 
-input {
+.login-box input {
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -42,10 +42,9 @@ input {
   color:white;
 }
 
-button {
+.login-box button {
   width:100%;
   padding:10px;
-  margin-top:10px;
   border:none;
   border-radius:10px;
   background:red;
@@ -53,6 +52,8 @@ button {
 }
 
 /* HEADER */
+#userInfo {text-align:center;margin-top:10px;}
+
 .top-buttons {
   display:flex;
   justify-content:center;
@@ -60,11 +61,13 @@ button {
   margin:10px;
 }
 
-.btn-admin {background:#007bff;width:auto;padding:6px 15px;}
-.btn-salir {width:auto;padding:6px 15px;}
+.btn-salir {background:red;padding:6px 15px;border-radius:8px;}
+.btn-admin {background:#007bff;padding:6px 15px;border-radius:8px;}
 
 /* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
+.titulo {text-align:center;font-size:22px;}
+.sub {text-align:center;color:gray;}
 
 /* MENU */
 .grid-menu {
@@ -77,6 +80,7 @@ button {
 .menu-card {
   background:#111;
   border-radius:15px;
+  overflow:hidden;
   text-align:center;
   cursor:pointer;
 }
@@ -105,47 +109,53 @@ button {
 
 .card img {
   width:100%;
-  height:150px;
+  height:140px;
   object-fit:cover;
   border-radius:10px;
-}
-
-/* SLIDER */
-.slider {
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-}
-
-.slider img {
-  width:85%;
-  border-radius:15px;
 }
 
 /* TABLA PRO */
 table {
   width:100%;
-  margin-top:15px;
-  border-collapse:separate;
-  border-spacing:0 8px;
+  background:#111;
+  border-radius:10px;
+  margin-top:10px;
+  border-collapse:collapse;
 }
 
-th {
+th,td {
   padding:10px;
   text-align:center;
-  color:#00ffaa;
+  font-size:13px;
 }
 
-td {
-  padding:12px;
-  text-align:center;
-  background:#1a1a1a;
+/* SELECTOR */
+.selector {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+  gap:10px;
+}
+
+select {
+  padding:8px;
   border-radius:8px;
+  border:none;
 }
 
-/* PANEL */
-#panel {display:none;padding:20px;}
+/* BOTONES */
+button {
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
+}
 
+#panel {display:none;padding:20px;}
 </style>
 </head>
 
@@ -174,6 +184,8 @@ td {
 
 <div id="portada">
   <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
+  <div class="titulo">CONTROL DE INVENTARIO</div>
+  <div class="sub">A&T KAMIARA</div>
 </div>
 
 <!-- MENU -->
@@ -182,13 +194,10 @@ td {
   <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
   <div class="menu-card" onclick="abrir('TECNOLOGIA')"><img src="https://i.imgur.com/2DhmtJ4.jpg"><p>TECNOLOGÍA</p></div>
   <div class="menu-card" onclick="abrir('OTONO')"><img src="https://i.imgur.com/Y7mT4bT.jpg"><p>OTOÑO</p></div>
-  <div class="menu-card" onclick="abrir('NAVIDAD')"><img src="https://i.imgur.com/YT6XGkZ.jpg"><p>NAVIDAD</p></div>
-  <div class="menu-card" onclick="abrir('JUGUETES')"><img src="https://i.imgur.com/d2P6PqH.jpg"><p>JUGUETES</p></div>
 </div>
 
 <div id="productos"></div>
 
-<!-- PANEL -->
 <div id="panel">
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
@@ -201,12 +210,17 @@ td {
 <script>
 
 // LOGIN
-const usuariosSistema={dante:"admin123"};
-const admins=["dante"];
+const usuariosSistema = { luis:"123", katy:"123", katherine:"123", richard:"123", dante:"admin123" };
+const admins = ["dante"];
 
 function guardarUsuario(){
-  if(usuariosSistema[usuario.value]!==password.value) return errorLogin.innerText="Error";
-  localStorage.setItem("usuario",usuario.value);
+  const user = usuario.value.toLowerCase().trim();
+  const pass = password.value;
+
+  if(!usuariosSistema[user]) return errorLogin.innerText="Usuario no registrado";
+  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Contraseña incorrecta";
+
+  localStorage.setItem("usuario",user);
   location.reload();
 }
 
@@ -216,24 +230,26 @@ function cerrarSesion(){
 }
 
 window.onload=()=>{
-  const u=localStorage.getItem("usuario");
-  login.style.display=u?"none":"flex";
-  app.style.display=u?"block":"none";
-  if(admins.includes(u)) panelBtn.style.display="inline-block";
+  const user=localStorage.getItem("usuario");
+
+  login.style.display = user ? "none":"flex";
+  app.style.display = user ? "block":"none";
+
+  if(user){
+    const esAdmin = admins.includes(user);
+    userInfo.innerHTML = `USUARIO: ${user.toUpperCase()} ${esAdmin?"🔑 ADMIN":""}`;
+    if(esAdmin) panelBtn.style.display="inline-block";
+  }
 };
 
-// INVENTARIO BIEN LEÍDO
+// INVENTARIO
+const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
-fetch("https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO")
-.then(r=>r.json())
-.then(data=>{
-  inventario = data.map(p=>{
+fetch(urlInv).then(r=>r.json()).then(d=>{
+  inventario = d.map(p=>{
     let o={};
-    Object.keys(p).forEach(k=>{
-      o[k.toLowerCase().trim()] = p[k];
-    });
-
+    Object.keys(p).forEach(k=>o[k.trim().toLowerCase()]=p[k]);
     return {
       id:o.id,
       producto:o.producto,
@@ -253,101 +269,100 @@ function abrir(cat){
   menu.style.display="none";
   productos.style.display="grid";
 
-  const lista=inventario.filter(p=>p.categoria===cat && p.stock>0);
+  const filtrados = inventario.filter(p=>p.categoria===cat && p.stock>0);
 
-  const unicos={};
-  lista.forEach(p=>{
-    if(!unicos[p.id]) unicos[p.id]=p;
-  });
+  const unicos = {};
+  filtrados.forEach(p=>{ if(!unicos[p.id]) unicos[p.id]=p; });
 
-  let html="";
-  Object.values(unicos).forEach(p=>{
-    html+=`
-    <div class="card" onclick="verProducto('${p.id}','${cat}')">
-      <img src="${p.imagen}">
-      <h3>${p.producto}</h3>
-      <p>S/ ${p.unidad}</p>
-    </div>`;
-  });
+  render(Object.values(unicos));
 
-  html+=`<button onclick="inicio()">⬅ Volver</button>`;
-  productos.innerHTML=html;
+  productos.innerHTML += `<button onclick="inicio()">⬅ Volver</button>`;
 }
 
 function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
+  panel.style.display="none";
 }
 
-// DETALLE PRO (TODO TU SISTEMA)
-function verProducto(id,cat){
-
-  const variantes=inventario.filter(p=>p.id==id && p.stock>0);
-  const p=variantes[0];
-
-  let total=0;
-  variantes.forEach(v=> total+=v.stock);
-
-  const tallas=[...new Set(variantes.map(v=>v.talla))];
-
-  productos.innerHTML=`
-  <div>
-
-    <div class="slider">
-      ${variantes.slice(0,3).map(v=>`<img src="${v.imagen}">`).join("")}
-    </div>
-
-    <h2>${p.producto}</h2>
-
-    <select onchange="filtrar('${id}',this.value)">
-      ${tallas.map(t=>`<option>${t}</option>`)}
-    </select>
-
-    <p>📦 STOCK TOTAL: ${total}</p>
-
-    <div id="tabla"></div>
-
-    <button onclick="abrir('${cat}')">⬅ Volver</button>
-
-  </div>
-  `;
-
-  filtrar(id,tallas[0]);
+// LISTA
+function render(lista){
+  let html="";
+  lista.forEach(p=>{
+    html+=`
+      <div class="card" onclick="verProducto('${p.id}')">
+        <img src="${p.imagen}">
+        <h3>${p.producto}</h3>
+        <p style="color:lime;">S/ ${p.unidad}</p>
+      </div>
+    `;
+  });
+  productos.innerHTML = html;
 }
 
-// FILTRO
-function filtrar(id,talla){
-  const lista=inventario.filter(p=>p.id==id && p.talla==talla);
+// DETALLE PRO
+function verProducto(id){
 
-  let filas="";
-  lista.forEach(v=>{
-    filas+=`
+  const variantes = inventario.filter(p=>p.id==id && p.stock>0);
+  const p = variantes[0];
+
+  let tallas = [...new Set(variantes.map(v=>v.talla))];
+
+  let stockTotal = variantes.reduce((a,b)=>a+b.stock,0);
+
+  let filas = variantes.map(v=>`
     <tr>
+      <td>${v.talla}</td>
       <td>${v.color}</td>
       <td>${v.stock}</td>
       <td>S/ ${v.unidad}</td>
-      <td>S/ ${v.docena}</td>
-    </tr>`;
-  });
-
-  tabla.innerHTML=`
-  <table>
-    <tr>
-      <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
     </tr>
-    ${filas}
-  </table>
+  `).join("");
+
+  productos.innerHTML = `
+    <div>
+      <img src="${p.imagen}" style="width:100%;border-radius:15px;">
+      <h2>${p.producto}</h2>
+
+      <div class="selector">
+        <div>
+          <label>Talla:</label>
+          <select>
+            ${tallas.map(t=>`<option>${t}</option>`).join("")}
+          </select>
+        </div>
+
+        <div>
+          <b>Stock Total:</b><br>
+          ${stockTotal}
+        </div>
+      </div>
+
+      <table>
+        <tr>
+          <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>PRECIO</th>
+        </tr>
+        ${filas}
+      </table>
+
+      <p>📦 Docena: S/ ${p.docena}</p>
+
+      <button onclick="abrir('${p.categoria}')">⬅ Volver</button>
+    </div>
   `;
 }
 
 // PANEL
+const FORM_ADMIN="https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
+const SHEETS_VENTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
+
 function abrirPanel(){
   menu.style.display="none";
   panel.style.display="block";
 }
 
-function abrirFormulario(){window.open("https://docs.google.com/forms")}
-function verVentas(){window.open("https://docs.google.com/spreadsheets")}
+function abrirFormulario(){window.open(FORM_ADMIN)}
+function verVentas(){window.open(SHEETS_VENTAS)}
 
 </script>
 
