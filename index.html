@@ -110,7 +110,7 @@ body {
   font-weight:bold;
 }
 
-/* PRODUCTOS (2 COLUMNAS) */
+/* PRODUCTOS */
 #productos {
   display:none;
   grid-template-columns:repeat(2,1fr);
@@ -135,7 +135,7 @@ body {
   border-radius:10px;
 }
 
-/* BOTONES GENERALES */
+/* BOTONES */
 button {
   width:100%;
   margin-top:5px;
@@ -146,13 +146,12 @@ button {
   color:white;
 }
 
-/* BOTONES ABAJO */
 .bottom-btn {
   margin-top:20px;
 }
 
 /* SECCIONES */
-#volver, #panel, #dashboard {display:none;padding:20px;}
+#panel {display:none;padding:20px;}
 </style>
 </head>
 
@@ -180,7 +179,6 @@ button {
 </div>
 
 <div id="portada">
-  <!-- ✅ CORREGIDO -->
   <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
   <div class="titulo">CONTROL DE INVENTARIO</div>
   <div class="sub">----------------------------------------------------------</div>
@@ -209,6 +207,9 @@ button {
 </div>
 
 <script>
+
+// 👇 NUEVO (para navegación correcta)
+let categoriaActual = "";
 
 // USUARIOS
 const usuariosSistema = {
@@ -283,6 +284,8 @@ fetch(urlInv)
 
 // MENU
 function abrir(cat){
+  categoriaActual = cat;
+
   menu.style.display="none";
   productos.style.display="grid";
 
@@ -297,6 +300,17 @@ function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
   panel.style.display="none";
+}
+
+// 👇 NUEVO volver correcto
+function volverProductos(){
+  productos.style.display="grid";
+
+  render(inventario.filter(p=>p.categoria===categoriaActual));
+
+  productos.innerHTML += `
+    <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+  `;
 }
 
 // PRODUCTOS
@@ -337,7 +351,8 @@ function verProducto(data){
         </tr>
       </table>
 
-      <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+      <!-- 👇 CORREGIDO -->
+      <button class="bottom-btn" onclick="volverProductos()">⬅ Volver</button>
     </div>
   `;
 }
