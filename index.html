@@ -21,19 +21,18 @@ body {
   align-items:center;
   justify-content:center;
   height:100vh;
-  padding:10px;
 }
 
 .login-box {
   background:#111;
   padding:20px;
   border-radius:20px;
-  width:100%;
+  width:90%;
   max-width:320px;
   text-align:center;
 }
 
-.login-box input {
+input {
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -43,16 +42,17 @@ body {
   color:white;
 }
 
-.login-box button {
+button {
   width:100%;
   padding:10px;
   border:none;
   border-radius:10px;
   background:red;
   color:white;
+  margin-top:10px;
 }
 
-#errorLogin {color:#ff4d4d;font-size:13px;}
+#errorLogin {color:#ff4d4d;}
 
 /* HEADER */
 #userInfo {text-align:center;margin-top:10px;}
@@ -64,23 +64,12 @@ body {
   margin:10px;
 }
 
-.btn-salir {
-  background:red;
-  padding:6px 15px;
-  font-size:12px;
-  border-radius:8px;
-}
-
-.btn-admin {
-  background:#007bff;
-  padding:6px 15px;
-  font-size:12px;
-  border-radius:8px;
-}
+.btn-salir {background:red;font-size:12px;padding:6px 15px;}
+.btn-admin {background:#007bff;font-size:12px;padding:6px 15px;}
 
 /* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
-.titulo {text-align:center;font-size:22px;}
+.titulo {text-align:center;font-size:20px;}
 .sub {text-align:center;color:gray;}
 
 /* MENU */
@@ -99,16 +88,8 @@ body {
   cursor:pointer;
 }
 
-.menu-card img {
-  width:100%;
-  height:120px;
-  object-fit:cover;
-}
-
-.menu-card p {
-  margin:5px;
-  font-weight:bold;
-}
+.menu-card img {width:100%;height:120px;object-fit:cover;}
+.menu-card p {margin:5px;font-weight:bold;}
 
 /* PRODUCTOS */
 #productos {
@@ -123,7 +104,6 @@ body {
   border-radius:15px;
   padding:10px;
   text-align:center;
-  cursor:pointer;
 }
 
 .card img {
@@ -141,30 +121,14 @@ table {
   margin-top:10px;
 }
 
-th,td {
-  padding:6px;
-  font-size:12px;
-}
+th,td {padding:6px;font-size:12px;}
 
-/* BOTONES */
-button {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:red;
-  color:white;
+/* BOTON VOLVER PEQUEÑO */
+.btn-volver {
+  width:60%;
+  margin:20px auto;
+  display:block;
 }
-
-/* BOTON PEQUEÑO */
-.btn-back {
-  width:auto;
-  padding:8px 15px;
-  margin-top:15px;
-}
-
-.bottom-btn {margin-top:20px;}
 
 #panel {display:none;padding:20px;}
 </style>
@@ -270,6 +234,7 @@ window.onload=()=>{
 // INVENTARIO
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
+let categoriaActual="";
 
 fetch(urlInv)
 .then(r=>r.json())
@@ -286,7 +251,7 @@ fetch(urlInv)
       categoria:(o.categoria||"").toUpperCase(),
       talla:o.talla,
       color:o.color,
-      stock:o.stock,
+      stock:Number(o.stock||0),
       unidad:o["p.unidad"],
       docena:o["p.docena"],
       imagen:o.imagen
@@ -294,23 +259,23 @@ fetch(urlInv)
   });
 });
 
-let listaActual = [];
-
 // MENU
 function abrir(cat){
+  categoriaActual = cat;
+
   menu.style.display="none";
   productos.style.display="grid";
 
-  listaActual = inventario.filter(p=>p.categoria===cat);
+  const filtrados = inventario.filter(p=>p.categoria===cat);
 
-  const unicos = {};
-  listaActual.forEach(p=>{
+  const unicos={};
+  filtrados.forEach(p=>{
     if(!unicos[p.id]) unicos[p.id]=p;
   });
 
   render(Object.values(unicos));
 
-  productos.innerHTML += `<button class="btn-back" onclick="inicio()">⬅ Volver</button>`;
+  productos.innerHTML += `<button class="btn-volver" onclick="inicio()">⬅ Volver</button>`;
 }
 
 function inicio(){
@@ -334,42 +299,57 @@ function render(lista){
   productos.innerHTML = html;
 }
 
-// DETALLE CON FILTRO POR TALLA
+// DETALLE PRO
 function verProducto(id){
 
   const variantes = inventario.filter(p=>p.id==id);
   const p = variantes[0];
 
-  const tallas = [...new Set(variantes.map(v=>v.talla))];
+  const stockTotal = variantes.reduce((a,b)=>a+b.stock,0);
+  const tallas=[...new Set(variantes.map(v=>v.talla))];
 
-  let select = `<select onchange="filtrarTalla('${id}', this.value)">`;
-  select += `<option value="">Seleccionar talla</option>`;
-  tallas.forEach(t=> select+=`<option value="${t}">${t}</option>`);
-  select += `</select>`;
+  const imgs=variantes.map(v=>v.imagen).filter(i=>i);
+  const img1=imgs[0]||"";
+  const img2=imgs[1]||img1;
 
   productos.style.display="block";
 
-  productos.innerHTML = `
+  productos.innerHTML=`
     <div>
-      <img src="${p.imagen}" style="width:100%;border-radius:15px;">
+
+      <div style="display:flex;overflow-x:auto;gap:10px;">
+        <img src="${img1}" style="width:90%;border-radius:15px;">
+        <img src="${img2}" style="width:90%;border-radius:15px;">
+      </div>
+
       <h2>${p.producto}</h2>
 
-      ${select}
+      <select id="filtroTalla" onchange="filtrarTalla('${id}')">
+        <option value="">Seleccionar talla</option>
+        ${tallas.map(t=>`<option value="${t}">${t}</option>`).join("")}
+      </select>
 
-      <div id="tablaVariante"></div>
+      <p style="color:#00ff88;">STOCK TOTAL: ${stockTotal}</p>
 
-      <button class="btn-back" onclick="volverLista()">⬅ Volver</button>
+      <table id="tablaDetalle">
+        <tr>
+          <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>P.UNIDAD</th><th>P.DOCENA</th>
+        </tr>
+      </table>
+
+      <button onclick="volverALista()">⬅ Volver</button>
     </div>
   `;
+
+  llenarTabla(variantes);
 }
 
-function filtrarTalla(id,talla){
-  const variantes = inventario.filter(p=>p.id==id && p.talla==talla);
-
-  let filas="";
-  variantes.forEach(v=>{
-    filas+=`
+function llenarTabla(lista){
+  let html="";
+  lista.forEach(v=>{
+    html+=`
       <tr>
+        <td>${v.talla}</td>
         <td>${v.color}</td>
         <td>${v.stock}</td>
         <td>S/ ${v.unidad}</td>
@@ -378,27 +358,26 @@ function filtrarTalla(id,talla){
     `;
   });
 
-  tablaVariante.innerHTML = `
-    <table>
-      <tr>
-        <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
-      </tr>
-      ${filas}
-    </table>
-  `;
+  document.getElementById("tablaDetalle").innerHTML += html;
 }
 
-function volverLista(){
-  productos.style.display="grid";
+function filtrarTalla(id){
+  const talla = document.getElementById("filtroTalla").value;
 
-  const unicos = {};
-  listaActual.forEach(p=>{
-    if(!unicos[p.id]) unicos[p.id]=p;
-  });
+  const variantes = inventario.filter(p=>p.id==id);
+  const filtrados = talla ? variantes.filter(v=>v.talla===talla) : variantes;
 
-  render(Object.values(unicos));
+  document.getElementById("tablaDetalle").innerHTML = `
+    <tr>
+      <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>P.UNIDAD</th><th>P.DOCENA</th>
+    </tr>
+  `;
 
-  productos.innerHTML += `<button class="btn-back" onclick="inicio()">⬅ Volver</button>`;
+  llenarTabla(filtrados);
+}
+
+function volverALista(){
+  abrir(categoriaActual);
 }
 
 // PANEL
