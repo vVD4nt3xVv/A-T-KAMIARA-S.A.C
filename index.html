@@ -181,9 +181,8 @@ select {
 </div>
 
 <div id="portada">
-  <!-- 🔥 IMAGEN BELINDA -->
-  <img src="https://lh3.googleusercontent.com/d/1u0S5nSFWrKoncSE2NgZxMxvRUra4qFlF">
-  <div class="titulo">CHALeco BELINDA</div>
+  <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
+  <div class="titulo">CONTROL DE INVENTARIO</div>
   <div class="sub">A&T KAMIARA</div>
 </div>
 
@@ -303,17 +302,23 @@ function inicio(){
   panel.style.display="none";
 }
 
-// LISTA
+// LISTA (AQUI VA BELINDA)
 function render(lista){
   let html="";
   lista.forEach(p=>{
+
+    const img = p.id == "1"
+      ? "https://lh3.googleusercontent.com/d/1u0S5nSFWrKoncSE2NgZxMxvRUra4qFlF"
+      : p.imagen;
+
     html+=`
     <div class="card" onclick="verProducto('${p.id}')">
-      <img src="${p.imagen}">
+      <img src="${img}">
       <h3>${p.producto}</h3>
       <p style="color:lime;">S/ ${p.unidad}</p>
     </div>`;
   });
+
   productos.innerHTML=html;
 }
 
@@ -324,7 +329,6 @@ function verProducto(id){
   const p=variantes[0];
 
   const total=variantes.reduce((a,b)=>a+b.stock,0);
-
   const tallas=[...new Set(variantes.map(v=>v.talla))];
 
   let opciones="";
