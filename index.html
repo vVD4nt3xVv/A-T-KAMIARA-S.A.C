@@ -16,17 +16,47 @@ body {
 }
 
 /* LOGIN */
-#login {display:flex;align-items:center;justify-content:center;height:100vh;}
-.login-box {background:#111;padding:20px;border-radius:20px;width:90%;max-width:320px;text-align:center;}
-.login-box input {width:100%;padding:10px;margin:6px 0;border:none;border-radius:10px;background:#222;color:white;}
-.login-box button {width:100%;padding:10px;border:none;border-radius:10px;background:red;color:white;}
-#errorLogin {color:red;}
+#login {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+.login-box {
+  background:#111;
+  padding:20px;
+  border-radius:20px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+}
+
+.login-box input, .login-box button {
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  border:none;
+  border-radius:10px;
+}
+
+.login-box input {background:#222;color:white;}
+.login-box button {background:red;color:white;}
+
+#errorLogin {color:#ff4d4d;}
 
 /* HEADER */
 #userInfo {text-align:center;margin-top:10px;}
-.top-buttons {display:flex;justify-content:center;gap:10px;margin:10px;}
+
+.top-buttons {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:10px;
+}
+
 .btn-salir {background:red;padding:6px 15px;border-radius:8px;}
-.btn-admin {background:#007bff;padding:6px 15px;border-radius:8px;}
+.btn-admin {background:#007bff;padding:6px 15px;border-radius:8px;display:none;}
 
 /* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
@@ -34,37 +64,87 @@ body {
 .sub {text-align:center;color:gray;}
 
 /* MENU */
-.grid-menu {display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;}
-.menu-card {background:#111;border-radius:15px;text-align:center;cursor:pointer;}
-.menu-card img {width:100%;height:120px;object-fit:cover;}
+.grid-menu {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
+
+.menu-card {
+  background:#111;
+  border-radius:15px;
+  overflow:hidden;
+  text-align:center;
+  cursor:pointer;
+}
+
+.menu-card img {
+  width:100%;
+  height:120px;
+  object-fit:cover;
+}
 
 /* PRODUCTOS */
-#productos {display:none;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;}
-.card {background:#111;border-radius:15px;padding:10px;text-align:center;cursor:pointer;}
-.card img {width:100%;height:140px;object-fit:cover;border-radius:10px;}
-
-/* TABLA */
-table {width:100%;background:#111;border-radius:10px;margin-top:10px;border-collapse:collapse;}
-th,td {padding:10px;text-align:center;font-size:13px;}
-
-/* SELECTOR */
-.selector {display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
-select {padding:8px;border-radius:8px;border:none;}
-
-/* CARRUSEL */
-.carrusel {
-  display:flex;
-  overflow-x:auto;
+#productos {
+  display:none;
+  grid-template-columns:repeat(2,1fr);
   gap:10px;
-  margin-bottom:10px;
+  padding:10px;
 }
-.carrusel img {
-  width:80%;
+
+.card {
+  background:#111;
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.card img {
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+/* DETALLE */
+.detalle-img {
+  width:100%;
   border-radius:15px;
 }
 
+/* FILA COMPACTA */
+.fila-opciones {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#111;
+  padding:8px;
+  border-radius:10px;
+  margin-top:10px;
+  font-size:12px;
+}
+
+/* SELECT */
+select {
+  background:#222;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:5px;
+}
+
 /* BOTONES */
-button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;background:red;color:white;}
+button {
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
+}
 
 #panel {display:none;padding:20px;}
 </style>
@@ -72,6 +152,7 @@ button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;b
 
 <body>
 
+<!-- LOGIN -->
 <div id="login">
   <div class="login-box">
     <h3>Bienvenido</h3>
@@ -82,13 +163,14 @@ button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;b
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" style="display:none;">
 
 <div id="userInfo"></div>
 
 <div class="top-buttons">
   <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
-  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()" style="display:none;">Panel</button>
+  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()">Panel</button>
 </div>
 
 <div id="portada">
@@ -97,6 +179,7 @@ button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;b
   <div class="sub">A&T KAMIARA</div>
 </div>
 
+<!-- MENU -->
 <div id="menu" class="grid-menu">
   <div class="menu-card" onclick="abrir('INVIERNO')"><img src="https://i.imgur.com/0rZ9F9G.jpg"><p>INVIERNO</p></div>
   <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
@@ -104,6 +187,7 @@ button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;b
 
 <div id="productos"></div>
 
+<!-- PANEL -->
 <div id="panel">
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
@@ -115,39 +199,60 @@ button {width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;b
 
 <script>
 
-const usuariosSistema = { luis:"123", dante:"admin123" };
+// USUARIOS
+const usuariosSistema = { dante:"admin123" };
 const admins = ["dante"];
 
+// LOGIN
 function guardarUsuario(){
-  const user = usuario.value.toLowerCase();
-  const pass = password.value;
-  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Error";
+  const user=usuario.value.toLowerCase();
+  const pass=password.value;
+
+  if(!usuariosSistema[user]) return errorLogin.innerText="Usuario no registrado";
+  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Contraseña incorrecta";
+
   localStorage.setItem("usuario",user);
   location.reload();
 }
 
-function cerrarSesion(){localStorage.clear();location.reload();}
+function cerrarSesion(){
+  localStorage.removeItem("usuario");
+  location.reload();
+}
 
+// UI
 window.onload=()=>{
   const user=localStorage.getItem("usuario");
-  login.style.display = user?"none":"flex";
-  app.style.display = user?"block":"none";
+
+  login.style.display=user?"none":"flex";
+  app.style.display=user?"block":"none";
+
   if(user){
-    userInfo.innerHTML="USUARIO: "+user;
+    userInfo.innerHTML=`USUARIO: ${user.toUpperCase()}`;
     if(admins.includes(user)) panelBtn.style.display="inline-block";
   }
 };
 
 // INVENTARIO
+const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
-fetch("https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO")
-.then(r=>r.json()).then(d=>{
+
+fetch(urlInv)
+.then(r=>r.json())
+.then(d=>{
   inventario=d.map(p=>{
-    let o={}; Object.keys(p).forEach(k=>o[k.toLowerCase().trim()]=p[k]);
+    let o={};
+    Object.keys(p).forEach(k=>o[k.toLowerCase().trim()]=p[k]);
+
     return {
-      id:o.id, producto:o.producto, categoria:(o.categoria||"").toUpperCase(),
-      talla:o.talla, color:o.color, stock:Number(o.stock||0),
-      unidad:o["p.unidad"], docena:o["p.docena"],
+      id:o.id,
+      producto:o.producto,
+      categoria:(o.categoria||"").toUpperCase(),
+      talla:o.talla,
+      color:o.color,
+      stock:parseInt(o.stock)||0,
+      unidad:o["p.unidad"],
+      docena:o["p.docena"],
       imagen:o.imagen
     };
   });
@@ -158,10 +263,10 @@ function abrir(cat){
   menu.style.display="none";
   productos.style.display="grid";
 
-  let filtrados=inventario.filter(p=>p.categoria===cat && p.stock>0);
+  const filtrados=inventario.filter(p=>p.categoria===cat && p.stock>0);
 
-  let unicos={};
-  filtrados.forEach(p=>{if(!unicos[p.id])unicos[p.id]=p;});
+  const unicos={};
+  filtrados.forEach(p=>{ if(!unicos[p.id]) unicos[p.id]=p; });
 
   render(Object.values(unicos));
 
@@ -191,67 +296,63 @@ function render(lista){
 // DETALLE PRO
 function verProducto(id){
 
-  const variantes = inventario.filter(p=>p.id==id && p.stock>0);
-  const p = variantes[0];
+  const variantes=inventario.filter(p=>p.id==id);
+  const p=variantes[0];
 
-  let tallas=[...new Set(variantes.map(v=>v.talla))];
+  const tallas=[...new Set(variantes.map(v=>v.talla))];
 
-  // IMÁGENES (máx 3)
-  let imgs=[...new Set(variantes.map(v=>v.imagen))].slice(0,3);
-
-  function renderTabla(tallaSel){
-    let datos=variantes.filter(v=>!tallaSel || v.talla==tallaSel);
-
-    return datos.map(v=>`
-      <tr>
-        <td>${v.talla}</td>
-        <td>${v.color}</td>
-        <td>${v.stock}</td>
-        <td>S/ ${v.unidad}</td>
-        <td>S/ ${v.docena}</td>
-      </tr>
-    `).join("");
-  }
+  const stockTotal=variantes.reduce((a,b)=>a+b.stock,0);
 
   productos.innerHTML=`
-  <div>
+    <div>
+      <img class="detalle-img" src="${p.imagen}">
+      <h2>${p.producto}</h2>
 
-    <div class="carrusel">
-      ${imgs.map(i=>`<img src="${i}">`).join("")}
-    </div>
-
-    <h2>${p.producto}</h2>
-
-    <div class="selector">
-      <div>
-        <label>Talla:</label>
-        <select id="filtroTalla">
-          <option value="">Todas</option>
+      <div class="fila-opciones">
+        <select id="tallaSelect" onchange="cambiarTalla('${id}')">
           ${tallas.map(t=>`<option>${t}</option>`).join("")}
         </select>
+
+        <div>📦 <span id="stockTalla">0</span></div>
+        <div>📊 ${stockTotal}</div>
       </div>
+
+      <table>
+        <tr>
+          <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>P.UNIDAD</th><th>P.DOCENA</th>
+        </tr>
+        ${variantes.map(v=>`
+          <tr>
+            <td>${v.talla}</td>
+            <td>${v.color}</td>
+            <td>${v.stock}</td>
+            <td>S/ ${v.unidad}</td>
+            <td>S/ ${v.docena}</td>
+          </tr>
+        `).join("")}
+      </table>
+
+      <button onclick="volverLista('${p.categoria}')">⬅ Volver</button>
     </div>
-
-    <table id="tabla">
-      <tr>
-        <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>UND</th><th>DOCENA</th>
-      </tr>
-      ${renderTabla()}
-    </table>
-
-    <button onclick="abrir('${p.categoria}')">⬅ Volver</button>
-  </div>
   `;
 
-  // FILTRO REAL
-  document.getElementById("filtroTalla").onchange=function(){
-    document.getElementById("tabla").innerHTML=`
-      <tr>
-        <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>UND</th><th>DOCENA</th>
-      </tr>
-      ${renderTabla(this.value)}
-    `;
-  };
+  cambiarTalla(id);
+}
+
+// STOCK DINÁMICO
+function cambiarTalla(id){
+  const talla=document.getElementById("tallaSelect").value;
+
+  const filtrados=inventario.filter(p=>p.id==id && p.talla==talla);
+
+  const total=filtrados.reduce((a,b)=>a+b.stock,0);
+
+  document.getElementById("stockTalla").innerText=total;
+}
+
+// VOLVER CORRECTO
+function volverLista(cat){
+  abrir(cat);
 }
 
 // PANEL
@@ -260,8 +361,13 @@ function abrirPanel(){
   panel.style.display="block";
 }
 
-function abrirFormulario(){window.open("https://docs.google.com/forms")}
-function verVentas(){window.open("https://docs.google.com")}
+function abrirFormulario(){
+  window.open("https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform");
+}
+
+function verVentas(){
+  window.open("https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE");
+}
 
 </script>
 
