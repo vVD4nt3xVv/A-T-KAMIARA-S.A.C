@@ -46,8 +46,13 @@ body {
 #errorLogin {color:#ff4d4d;}
 
 /* HEADER */
-#userInfo {text-align:center;margin-top:10px;}
+#userInfo {
+  text-align:center;
+  margin-top:10px;
+  font-weight:bold;
+}
 
+/* BOTONES */
 .top-buttons {
   display:flex;
   justify-content:center;
@@ -114,16 +119,35 @@ body {
   border-radius:15px;
 }
 
-/* FILA COMPACTA */
+/* FILA COMPACTA MEJORADA */
 .fila-opciones {
   display:flex;
   justify-content:space-between;
   align-items:center;
   background:#111;
-  padding:8px;
+  padding:10px;
   border-radius:10px;
   margin-top:10px;
   font-size:12px;
+  gap:10px;
+  text-align:center;
+}
+
+.fila-opciones div {
+  flex:1;
+}
+
+/* COLORES */
+.stock {
+  color:#00ff88;
+  font-weight:bold;
+  margin-left:5px;
+}
+
+.total {
+  color:#00aaff;
+  font-weight:bold;
+  margin-left:5px;
 }
 
 /* SELECT */
@@ -133,6 +157,7 @@ select {
   border:none;
   border-radius:8px;
   padding:5px;
+  margin-left:5px;
 }
 
 /* TABLA */
@@ -213,8 +238,14 @@ button {
 
 <script>
 
-// USUARIOS
-const usuariosSistema = { dante:"admin123" };
+// USUARIOS (NO ELIMINADOS)
+const usuariosSistema = {
+  luis:"123",
+  katy:"123",
+  katherine:"123",
+  richard:"123",
+  dante:"admin123"
+};
 const admins = ["dante"];
 
 // LOGIN
@@ -322,6 +353,7 @@ function verProducto(id){
       <h2>${p.producto}</h2>
 
       <div class="fila-opciones">
+
         <div>
           🧵 TALLAS
           <select id="tallaSelect" onchange="cambiarTalla('${id}')">
@@ -331,13 +363,14 @@ function verProducto(id){
 
         <div>
           📦 STOCK
-          <span id="stockTalla">0</span>
+          <span class="stock" id="stockTalla">0</span>
         </div>
 
         <div>
           📊 TOTAL
-          <span>${stockTotal}</span>
+          <span class="total">${stockTotal}</span>
         </div>
+
       </div>
 
       <table id="tablaDetalle"></table>
@@ -349,7 +382,7 @@ function verProducto(id){
   cambiarTalla(id);
 }
 
-// FILTRO FUNCIONAL
+// FILTRO
 function cambiarTalla(id){
   const talla=document.getElementById("tallaSelect").value;
 
