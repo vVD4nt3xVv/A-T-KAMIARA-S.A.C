@@ -32,7 +32,7 @@ body {
   text-align:center;
 }
 
-input {
+.login-box input {
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -42,29 +42,18 @@ input {
   color:white;
 }
 
-/* BOTONES */
-button {
+.login-box button {
   width:100%;
   padding:10px;
-  margin-top:10px;
   border:none;
   border-radius:10px;
   background:red;
   color:white;
 }
 
-.btn-admin {
-  background:#007bff;
-  width:auto;
-  padding:6px 15px;
-}
-
-.btn-salir {
-  width:auto;
-  padding:6px 15px;
-}
-
 /* HEADER */
+#userInfo {text-align:center;margin-top:10px;}
+
 .top-buttons {
   display:flex;
   justify-content:center;
@@ -72,12 +61,24 @@ button {
   margin:10px;
 }
 
-/* PORTADA */
-#portada img {
-  width:100%;
-  height:200px;
-  object-fit:cover;
+.btn-salir {
+  background:red;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
 }
+
+.btn-admin {
+  background:#007bff;
+  padding:6px 15px;
+  font-size:12px;
+  border-radius:8px;
+}
+
+/* PORTADA */
+#portada img {width:100%;height:200px;object-fit:cover;}
+.titulo {text-align:center;font-size:22px;}
+.sub {text-align:center;color:gray;}
 
 /* MENU */
 .grid-menu {
@@ -90,6 +91,7 @@ button {
 .menu-card {
   background:#111;
   border-radius:15px;
+  overflow:hidden;
   text-align:center;
   cursor:pointer;
 }
@@ -131,11 +133,11 @@ button {
 }
 
 .slider img {
-  width:90%;
+  width:85%;
   border-radius:15px;
 }
 
-/* TABLA PRO */
+/* TABLA MEJORADA */
 table {
   width:100%;
   margin-top:15px;
@@ -160,6 +162,23 @@ tr:hover td {
   background:#222;
 }
 
+/* BOTONES */
+button {
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
+}
+
+.btn-small {
+  width:auto;
+  padding:8px 15px;
+}
+
+/* PANEL */
 #panel {display:none;padding:20px;}
 
 </style>
@@ -190,12 +209,18 @@ tr:hover td {
 
 <div id="portada">
   <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
+  <div class="titulo">CONTROL DE INVENTARIO</div>
+  <div class="sub">A&T KAMIARA</div>
 </div>
 
-<!-- MENU -->
+<!-- MENU COMPLETO -->
 <div id="menu" class="grid-menu">
   <div class="menu-card" onclick="abrir('INVIERNO')"><img src="https://i.imgur.com/0rZ9F9G.jpg"><p>INVIERNO</p></div>
   <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
+  <div class="menu-card" onclick="abrir('TECNOLOGIA')"><img src="https://i.imgur.com/2DhmtJ4.jpg"><p>TECNOLOGÍA</p></div>
+  <div class="menu-card" onclick="abrir('OTONO')"><img src="https://i.imgur.com/Y7mT4bT.jpg"><p>OTOÑO</p></div>
+  <div class="menu-card" onclick="abrir('NAVIDAD')"><img src="https://i.imgur.com/YT6XGkZ.jpg"><p>NAVIDAD</p></div>
+  <div class="menu-card" onclick="abrir('JUGUETES')"><img src="https://i.imgur.com/d2P6PqH.jpg"><p>JUGUETES</p></div>
 </div>
 
 <div id="productos"></div>
@@ -212,15 +237,22 @@ tr:hover td {
 
 <script>
 
-// LOGIN
-const usuariosSistema = {dante:"admin123"};
+// USUARIOS
+const usuariosSistema = {
+  luis:"123", katy:"123", katherine:"123",
+  richard:"123", dante:"admin123"
+};
 const admins = ["dante"];
 
+// LOGIN
 function guardarUsuario(){
-  const u=usuario.value;
-  const p=password.value;
-  if(usuariosSistema[u]!==p) return errorLogin.innerText="Error";
-  localStorage.setItem("usuario",u);
+  const user = usuario.value.toLowerCase().trim();
+  const pass = password.value;
+
+  if(!usuariosSistema[user]) return errorLogin.innerText="Usuario no registrado";
+  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Contraseña incorrecta";
+
+  localStorage.setItem("usuario",user);
   location.reload();
 }
 
@@ -229,15 +261,21 @@ function cerrarSesion(){
   location.reload();
 }
 
+// UI
 window.onload=()=>{
-  const u=localStorage.getItem("usuario");
-  login.style.display=u?"none":"flex";
-  app.style.display=u?"block":"none";
-  if(admins.includes(u)) panelBtn.style.display="inline-block";
+  const user=localStorage.getItem("usuario");
+
+  login.style.display = user ? "none":"flex";
+  app.style.display = user ? "block":"none";
+
+  if(user){
+    if(admins.includes(user)) panelBtn.style.display="inline-block";
+  }
 };
 
 // INVENTARIO
 let inventario=[];
+
 fetch("https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO")
 .then(r=>r.json())
 .then(d=>inventario=d);
@@ -247,46 +285,42 @@ function abrir(cat){
   menu.style.display="none";
   productos.style.display="grid";
 
-  const filtrados=inventario.filter(p=>p.categoria==cat && p.stock>0);
+  const filtrados = inventario.filter(p=>p.categoria==cat && p.stock>0);
 
   const unicos={};
-  filtrados.forEach(p=>{if(!unicos[p.id])unicos[p.id]=p});
+  filtrados.forEach(p=>{ if(!unicos[p.id]) unicos[p.id]=p });
 
   let html="";
   Object.values(unicos).forEach(p=>{
     html+=`
-    <div class="card" onclick="verProducto('${p.id}')">
-      <img src="${p.imagen}">
-      <h3>${p.producto}</h3>
-      <p>S/ ${p["p.unidad"]}</p>
-    </div>`;
+      <div class="card" onclick="verProducto('${p.id}','${cat}')">
+        <img src="${p.imagen}">
+        <h3>${p.producto}</h3>
+        <p>S/ ${p["p.unidad"]}</p>
+      </div>
+    `;
   });
 
-  html+=`<button onclick="inicio()">⬅ Volver</button>`;
+  html+=`<button class="btn-small" onclick="inicio()">⬅ Volver</button>`;
   productos.innerHTML=html;
 }
 
 function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
+  panel.style.display="none";
 }
 
-// DETALLE PRO
-function verProducto(id){
+// DETALLE
+function verProducto(id,cat){
 
-  const variantes=inventario.filter(p=>p.id==id && p.stock>0);
-  const p=variantes[0];
+  const variantes = inventario.filter(p=>p.id==id && p.stock>0);
+  const p = variantes[0];
 
-  // STOCK TOTAL
   let total=0;
   variantes.forEach(v=> total+=Number(v.stock));
 
-  // TALLAS
   const tallas=[...new Set(variantes.map(v=>v.talla))];
-
-  let selector=`<select onchange="filtrarTalla('${id}',this.value)">`;
-  tallas.forEach(t=> selector+=`<option>${t}</option>`);
-  selector+=`</select>`;
 
   productos.innerHTML=`
   <div>
@@ -297,42 +331,44 @@ function verProducto(id){
 
     <h2>${p.producto}</h2>
 
-    ${selector}
+    <select onchange="filtrar('${id}',this.value)">
+      ${tallas.map(t=>`<option>${t}</option>`)}
+    </select>
 
     <p>📦 STOCK TOTAL: ${total}</p>
 
     <div id="tabla"></div>
 
-    <button onclick="abrir('${p.categoria}')">⬅ Volver</button>
+    <button onclick="abrir('${cat}')">⬅ Volver</button>
 
   </div>
   `;
 
-  filtrarTalla(id,tallas[0]);
+  filtrar(id,tallas[0]);
 }
 
-// FILTRO TALLA
-function filtrarTalla(id,talla){
+function filtrar(id,talla){
   const lista=inventario.filter(p=>p.id==id && p.talla==talla);
 
   let filas="";
   lista.forEach(v=>{
     filas+=`
-    <tr>
-      <td>${v.color}</td>
-      <td>${v.stock}</td>
-      <td>S/ ${v["p.unidad"]}</td>
-      <td>S/ ${v["p.docena"]}</td>
-    </tr>`;
+      <tr>
+        <td>${v.color}</td>
+        <td>${v.stock}</td>
+        <td>S/ ${v["p.unidad"]}</td>
+        <td>S/ ${v["p.docena"]}</td>
+      </tr>
+    `;
   });
 
   tabla.innerHTML=`
-  <table>
-    <tr>
-      <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
-    </tr>
-    ${filas}
-  </table>
+    <table>
+      <tr>
+        <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
+      </tr>
+      ${filas}
+    </table>
   `;
 }
 
@@ -342,13 +378,8 @@ function abrirPanel(){
   panel.style.display="block";
 }
 
-function abrirFormulario(){
-  window.open("https://docs.google.com/forms");
-}
-
-function verVentas(){
-  window.open("https://docs.google.com/spreadsheets");
-}
+function abrirFormulario(){window.open("https://docs.google.com/forms")}
+function verVentas(){window.open("https://docs.google.com/spreadsheets")}
 
 </script>
 
