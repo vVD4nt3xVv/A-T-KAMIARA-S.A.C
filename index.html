@@ -32,7 +32,7 @@ body {
   text-align:center;
 }
 
-.login-box input {
+input {
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -42,9 +42,10 @@ body {
   color:white;
 }
 
-.login-box button {
+button {
   width:100%;
   padding:10px;
+  margin-top:10px;
   border:none;
   border-radius:10px;
   background:red;
@@ -52,8 +53,6 @@ body {
 }
 
 /* HEADER */
-#userInfo {text-align:center;margin-top:10px;}
-
 .top-buttons {
   display:flex;
   justify-content:center;
@@ -61,24 +60,11 @@ body {
   margin:10px;
 }
 
-.btn-salir {
-  background:red;
-  padding:6px 15px;
-  font-size:12px;
-  border-radius:8px;
-}
-
-.btn-admin {
-  background:#007bff;
-  padding:6px 15px;
-  font-size:12px;
-  border-radius:8px;
-}
+.btn-admin {background:#007bff;width:auto;padding:6px 15px;}
+.btn-salir {width:auto;padding:6px 15px;}
 
 /* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
-.titulo {text-align:center;font-size:22px;}
-.sub {text-align:center;color:gray;}
 
 /* MENU */
 .grid-menu {
@@ -91,7 +77,6 @@ body {
 .menu-card {
   background:#111;
   border-radius:15px;
-  overflow:hidden;
   text-align:center;
   cursor:pointer;
 }
@@ -137,7 +122,7 @@ body {
   border-radius:15px;
 }
 
-/* TABLA MEJORADA */
+/* TABLA PRO */
 table {
   width:100%;
   margin-top:15px;
@@ -156,26 +141,6 @@ td {
   text-align:center;
   background:#1a1a1a;
   border-radius:8px;
-}
-
-tr:hover td {
-  background:#222;
-}
-
-/* BOTONES */
-button {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:red;
-  color:white;
-}
-
-.btn-small {
-  width:auto;
-  padding:8px 15px;
 }
 
 /* PANEL */
@@ -209,11 +174,9 @@ button {
 
 <div id="portada">
   <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
-  <div class="titulo">CONTROL DE INVENTARIO</div>
-  <div class="sub">A&T KAMIARA</div>
 </div>
 
-<!-- MENU COMPLETO -->
+<!-- MENU -->
 <div id="menu" class="grid-menu">
   <div class="menu-card" onclick="abrir('INVIERNO')"><img src="https://i.imgur.com/0rZ9F9G.jpg"><p>INVIERNO</p></div>
   <div class="menu-card" onclick="abrir('VERANO')"><img src="https://i.imgur.com/qIufhof.jpg"><p>VERANO</p></div>
@@ -237,22 +200,13 @@ button {
 
 <script>
 
-// USUARIOS
-const usuariosSistema = {
-  luis:"123", katy:"123", katherine:"123",
-  richard:"123", dante:"admin123"
-};
-const admins = ["dante"];
-
 // LOGIN
+const usuariosSistema={dante:"admin123"};
+const admins=["dante"];
+
 function guardarUsuario(){
-  const user = usuario.value.toLowerCase().trim();
-  const pass = password.value;
-
-  if(!usuariosSistema[user]) return errorLogin.innerText="Usuario no registrado";
-  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Contraseña incorrecta";
-
-  localStorage.setItem("usuario",user);
+  if(usuariosSistema[usuario.value]!==password.value) return errorLogin.innerText="Error";
+  localStorage.setItem("usuario",usuario.value);
   location.reload();
 }
 
@@ -261,64 +215,78 @@ function cerrarSesion(){
   location.reload();
 }
 
-// UI
 window.onload=()=>{
-  const user=localStorage.getItem("usuario");
-
-  login.style.display = user ? "none":"flex";
-  app.style.display = user ? "block":"none";
-
-  if(user){
-    if(admins.includes(user)) panelBtn.style.display="inline-block";
-  }
+  const u=localStorage.getItem("usuario");
+  login.style.display=u?"none":"flex";
+  app.style.display=u?"block":"none";
+  if(admins.includes(u)) panelBtn.style.display="inline-block";
 };
 
-// INVENTARIO
+// INVENTARIO BIEN LEÍDO
 let inventario=[];
 
 fetch("https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO")
 .then(r=>r.json())
-.then(d=>inventario=d);
+.then(data=>{
+  inventario = data.map(p=>{
+    let o={};
+    Object.keys(p).forEach(k=>{
+      o[k.toLowerCase().trim()] = p[k];
+    });
+
+    return {
+      id:o.id,
+      producto:o.producto,
+      categoria:(o.categoria||"").toUpperCase(),
+      talla:o.talla,
+      color:o.color,
+      stock:Number(o.stock||0),
+      unidad:o["p.unidad"],
+      docena:o["p.docena"],
+      imagen:o.imagen
+    };
+  });
+});
 
 // MENU
 function abrir(cat){
   menu.style.display="none";
   productos.style.display="grid";
 
-  const filtrados = inventario.filter(p=>p.categoria==cat && p.stock>0);
+  const lista=inventario.filter(p=>p.categoria===cat && p.stock>0);
 
   const unicos={};
-  filtrados.forEach(p=>{ if(!unicos[p.id]) unicos[p.id]=p });
+  lista.forEach(p=>{
+    if(!unicos[p.id]) unicos[p.id]=p;
+  });
 
   let html="";
   Object.values(unicos).forEach(p=>{
     html+=`
-      <div class="card" onclick="verProducto('${p.id}','${cat}')">
-        <img src="${p.imagen}">
-        <h3>${p.producto}</h3>
-        <p>S/ ${p["p.unidad"]}</p>
-      </div>
-    `;
+    <div class="card" onclick="verProducto('${p.id}','${cat}')">
+      <img src="${p.imagen}">
+      <h3>${p.producto}</h3>
+      <p>S/ ${p.unidad}</p>
+    </div>`;
   });
 
-  html+=`<button class="btn-small" onclick="inicio()">⬅ Volver</button>`;
+  html+=`<button onclick="inicio()">⬅ Volver</button>`;
   productos.innerHTML=html;
 }
 
 function inicio(){
   menu.style.display="grid";
   productos.style.display="none";
-  panel.style.display="none";
 }
 
-// DETALLE
+// DETALLE PRO (TODO TU SISTEMA)
 function verProducto(id,cat){
 
-  const variantes = inventario.filter(p=>p.id==id && p.stock>0);
-  const p = variantes[0];
+  const variantes=inventario.filter(p=>p.id==id && p.stock>0);
+  const p=variantes[0];
 
   let total=0;
-  variantes.forEach(v=> total+=Number(v.stock));
+  variantes.forEach(v=> total+=v.stock);
 
   const tallas=[...new Set(variantes.map(v=>v.talla))];
 
@@ -347,28 +315,28 @@ function verProducto(id,cat){
   filtrar(id,tallas[0]);
 }
 
+// FILTRO
 function filtrar(id,talla){
   const lista=inventario.filter(p=>p.id==id && p.talla==talla);
 
   let filas="";
   lista.forEach(v=>{
     filas+=`
-      <tr>
-        <td>${v.color}</td>
-        <td>${v.stock}</td>
-        <td>S/ ${v["p.unidad"]}</td>
-        <td>S/ ${v["p.docena"]}</td>
-      </tr>
-    `;
+    <tr>
+      <td>${v.color}</td>
+      <td>${v.stock}</td>
+      <td>S/ ${v.unidad}</td>
+      <td>S/ ${v.docena}</td>
+    </tr>`;
   });
 
   tabla.innerHTML=`
-    <table>
-      <tr>
-        <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
-      </tr>
-      ${filas}
-    </table>
+  <table>
+    <tr>
+      <th>COLOR</th><th>STOCK</th><th>UNIDAD</th><th>DOCENA</th>
+    </tr>
+    ${filas}
+  </table>
   `;
 }
 
