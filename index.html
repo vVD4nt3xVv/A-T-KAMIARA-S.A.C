@@ -64,7 +64,7 @@ body {
 }
 
 .btn-salir {background:red;padding:6px 15px;border-radius:8px;}
-.btn-admin {background:#007bff;padding:6px 15px;border-radius:8px;}
+.btn-admin {background:#007bff;padding:6px 15px;border-radius:8px;display:none;}
 
 /* PORTADA */
 #portada img {width:100%;height:200px;object-fit:cover;}
@@ -152,6 +152,8 @@ select {
   border:none;
   margin-top:10px;
 }
+
+#panel {display:none;padding:20px;}
 </style>
 </head>
 
@@ -175,12 +177,13 @@ select {
 
 <div class="top-buttons">
   <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
-  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()" style="display:none;">Panel</button>
+  <button class="btn-admin" id="panelBtn" onclick="abrirPanel()">Panel</button>
 </div>
 
 <div id="portada">
-  <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
-  <div class="titulo">CONTROL DE INVENTARIO</div>
+  <!-- 🔥 IMAGEN BELINDA -->
+  <img src="https://lh3.googleusercontent.com/d/1u0S5nSFWrKoncSE2NgZxMxvRUra4qFlF">
+  <div class="titulo">CHALeco BELINDA</div>
   <div class="sub">A&T KAMIARA</div>
 </div>
 
@@ -193,6 +196,7 @@ select {
 
 <div id="productos"></div>
 
+<!-- PANEL -->
 <div id="panel">
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
@@ -204,28 +208,55 @@ select {
 
 <script>
 
-let categoriaActual="";
-
-// LOGIN
-const usuariosSistema={dante:"admin123"};
+// USUARIOS
+const usuariosSistema = {
+  dante:"admin123",
+  luis:"123"
+};
 const admins=["dante"];
 
+// LOGIN
 function guardarUsuario(){
-  localStorage.setItem("usuario","dante");
+  const user = usuario.value.toLowerCase().trim();
+  const pass = password.value;
+
+  if(!usuariosSistema[user]) return errorLogin.innerText="Usuario no registrado";
+  if(usuariosSistema[user]!==pass) return errorLogin.innerText="Contraseña incorrecta";
+
+  localStorage.setItem("usuario",user);
   location.reload();
 }
-function cerrarSesion(){localStorage.removeItem("usuario");location.reload();}
+
+function cerrarSesion(){
+  localStorage.removeItem("usuario");
+  location.reload();
+}
 
 // UI
 window.onload=()=>{
   const user=localStorage.getItem("usuario");
+
   login.style.display=user?"none":"flex";
   app.style.display=user?"block":"none";
+  panel.style.display="none";
+
+  if(user){
+    const esAdmin=admins.includes(user);
+
+    userInfo.innerHTML=`
+      <span style="color:#00aaff;">USUARIO:</span>
+      <span style="color:#00ff88;">${user.toUpperCase()}</span>
+      ${esAdmin?" 🔑 ADMIN":""}
+    `;
+
+    panelBtn.style.display = esAdmin ? "inline-block" : "none";
+  }
 };
 
 // INVENTARIO
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
+let categoriaActual="";
 
 fetch(urlInv)
 .then(r=>r.json())
@@ -263,7 +294,6 @@ function abrir(cat){
   });
 
   render(Object.values(unicos));
-
   productos.innerHTML+=`<button class="btn-small" onclick="inicio()">⬅ Volver</button>`;
 }
 
@@ -287,7 +317,7 @@ function render(lista){
   productos.innerHTML=html;
 }
 
-// DETALLE PRO
+// DETALLE
 function verProducto(id){
 
   const variantes=inventario.filter(p=>p.id==id && p.stock>0);
@@ -298,9 +328,7 @@ function verProducto(id){
   const tallas=[...new Set(variantes.map(v=>v.talla))];
 
   let opciones="";
-  tallas.forEach(t=>{
-    opciones+=`<option>${t}</option>`;
-  });
+  tallas.forEach(t=>opciones+=`<option>${t}</option>`);
 
   productos.style.display="block";
 
@@ -352,6 +380,19 @@ function filtrarTalla(id,talla){
     ${filas}
   </table>`;
 }
+
+// PANEL
+const FORM_ADMIN="https://docs.google.com/forms/d/e/1FAIpQLSfkDXdS7HH4ud4ephIeo0qMyiXqiNXLjs_gpmZF7fDqBoE73A/viewform";
+const SHEETS_VENTAS="https://docs.google.com/spreadsheets/d/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/edit#gid=0";
+
+function abrirPanel(){
+  menu.style.display="none";
+  productos.style.display="none";
+  panel.style.display="block";
+}
+
+function abrirFormulario(){window.open(FORM_ADMIN)}
+function verVentas(){window.open(SHEETS_VENTAS)}
 
 </script>
 
