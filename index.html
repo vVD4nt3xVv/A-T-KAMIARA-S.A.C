@@ -208,7 +208,7 @@ button {
 
 <script>
 
-// 👇 NUEVO (para navegación correcta)
+// NAVEGACIÓN
 let categoriaActual = "";
 
 // USUARIOS
@@ -270,6 +270,8 @@ fetch(urlInv)
       o[k.trim().toLowerCase()] = p[k];
     });
 
+    if(!o.producto) return null;
+
     return {
       producto:o.producto||"",
       stock:o.stock||0,
@@ -277,9 +279,11 @@ fetch(urlInv)
       docena:o.docena||0,
       cajon:o.cajon||0,
       imagen:o.imagen||"",
-      categoria:(o.categoria||"").toUpperCase()
+      categoria:(o.categoria||"").toString().trim().toUpperCase()
     };
-  });
+  }).filter(x=>x);
+
+  console.log("Productos cargados:", inventario.length);
 });
 
 // MENU
@@ -289,7 +293,9 @@ function abrir(cat){
   menu.style.display="none";
   productos.style.display="grid";
 
-  render(inventario.filter(p=>p.categoria===cat.toUpperCase()));
+  render(inventario.filter(p =>
+    (p.categoria || "").trim().toUpperCase() === cat.toUpperCase()
+  ));
 
   productos.innerHTML += `
     <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
@@ -302,7 +308,7 @@ function inicio(){
   panel.style.display="none";
 }
 
-// 👇 NUEVO volver correcto
+// VOLVER A PRODUCTOS
 function volverProductos(){
   productos.style.display="grid";
 
@@ -319,9 +325,10 @@ function render(lista){
   lista.forEach(p=>{
     html+=`
       <div class="card" onclick="verProducto('${encodeURIComponent(JSON.stringify(p))}')">
-        <img src="${p.imagen}">
+        <img src="${p.imagen || 'https://i.imgur.com/4ZQZ4Zy.png'}">
         <h3>${p.producto}</h3>
         <p style="color:lime;">S/ ${p.unidad}</p>
+        <p style="font-size:12px;color:gray;">Stock: ${p.stock}</p>
       </div>
     `;
   });
@@ -338,6 +345,7 @@ function verProducto(data){
     <div>
       <img src="${p.imagen}" style="width:100%;border-radius:15px;">
       <h2>${p.producto}</h2>
+      <p style="color:gray;">Disponible en tienda</p>
 
       <table style="width:100%;text-align:center;background:#111;border-radius:10px;">
         <tr>
@@ -351,7 +359,6 @@ function verProducto(data){
         </tr>
       </table>
 
-      <!-- 👇 CORREGIDO -->
       <button class="bottom-btn" onclick="volverProductos()">⬅ Volver</button>
     </div>
   `;
