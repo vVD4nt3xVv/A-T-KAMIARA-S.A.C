@@ -13,7 +13,7 @@ body {
   margin:0;
   max-width:480px;
   margin:auto;
-  font-size:15px; /* 🔥 MÁS GRANDE */
+  font-size:15px;
 }
 
 /* LOGIN */
@@ -206,7 +206,7 @@ button {
 }
 
 h2 {
-  text-align:center; /* 🔥 CENTRADO PRODUCTO */
+  text-align:center;
 }
 
 #panel {display:none;padding:20px;}
@@ -379,8 +379,8 @@ function verProducto(id){
         <div>
           🧵 TALLAS
           <select id="tallaSelect" onchange="cambiarTalla('${id}')">
-            <option value="TODAS">TODAS</option>
             ${tallas.map(t=>`<option value="${t}">${t}</option>`).join("")}
+            <option value="TODAS">TODAS</option>
           </select>
         </div>
 
