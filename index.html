@@ -119,11 +119,9 @@ body {
 }
 
 .card {
-  width:100%;
-  margin:0;
-  padding:10px;
-  border-radius:15px;
   background:#111;
+  border-radius:15px;
+  padding:10px;
   text-align:center;
   cursor:pointer;
 }
@@ -135,22 +133,32 @@ body {
   border-radius:10px;
 }
 
+/* TABLA */
+table {
+  width:100%;
+  background:#111;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+th,td {
+  padding:6px;
+  font-size:12px;
+}
+
 /* BOTONES */
 button {
   width:100%;
-  margin-top:5px;
-  padding:8px;
+  margin-top:10px;
+  padding:10px;
   border:none;
   border-radius:10px;
   background:red;
   color:white;
 }
 
-.bottom-btn {
-  margin-top:20px;
-}
+.bottom-btn {margin-top:20px;}
 
-/* SECCIONES */
 #panel {display:none;padding:20px;}
 </style>
 </head>
@@ -181,7 +189,7 @@ button {
 <div id="portada">
   <img src="https://lh3.googleusercontent.com/d/1iSusezseDbUbs0jztHYHmSaX6kyzUKLG">
   <div class="titulo">CONTROL DE INVENTARIO</div>
-  <div class="sub">----------------------------------------------------------</div>
+  <div class="sub">A&T KAMIARA</div>
 </div>
 
 <!-- MENU -->
@@ -201,15 +209,12 @@ button {
   <h2>Panel Admin</h2>
   <button onclick="abrirFormulario()">➕ Agregar Producto</button>
   <button onclick="verVentas()">📊 Ver Ventas</button>
-  <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
+  <button onclick="inicio()">⬅ Volver</button>
 </div>
 
 </div>
 
 <script>
-
-// NAVEGACIÓN
-let categoriaActual = "";
 
 // USUARIOS
 const usuariosSistema = {
@@ -238,8 +243,6 @@ function cerrarSesion(){
 
 // UI
 window.onload=()=>{
-  window.scrollTo(0,0);
-
   const user=localStorage.getItem("usuario");
 
   login.style.display = user ? "none":"flex";
@@ -257,7 +260,7 @@ window.onload=()=>{
   }
 };
 
-// INVENTARIO
+// INVENTARIO NUEVO
 const urlInv="https://opensheet.elk.sh/197The7KApBX0G_p9PCTiAAWZ1oBMLDWQEZIeUDHgXpE/INVENTARIO";
 let inventario=[];
 
@@ -270,36 +273,37 @@ fetch(urlInv)
       o[k.trim().toLowerCase()] = p[k];
     });
 
-    if(!o.producto) return null;
-
     return {
-      producto:o.producto||"",
-      stock:o.stock||0,
-      unidad:o.unidad||0,
-      docena:o.docena||0,
-      cajon:o.cajon||0,
-      imagen:o.imagen||"",
-      categoria:(o.categoria||"").toString().trim().toUpperCase()
+      id:o.id,
+      producto:o.producto,
+      categoria:(o.categoria||"").toUpperCase(),
+      talla:o.talla,
+      color:o.color,
+      stock:o.stock,
+      pcompra:o["p.compra"],
+      unidad:o["p.unidad"],
+      docena:o["p.docena"],
+      imagen:o.imagen
     };
-  }).filter(x=>x);
-
-  console.log("Productos cargados:", inventario.length);
+  });
 });
 
 // MENU
 function abrir(cat){
-  categoriaActual = cat;
-
   menu.style.display="none";
   productos.style.display="grid";
 
-  render(inventario.filter(p =>
-    (p.categoria || "").trim().toUpperCase() === cat.toUpperCase()
-  ));
+  const filtrados = inventario.filter(p=>p.categoria===cat);
 
-  productos.innerHTML += `
-    <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
-  `;
+  // AGRUPAR POR ID
+  const unicos = {};
+  filtrados.forEach(p=>{
+    if(!unicos[p.id]) unicos[p.id]=p;
+  });
+
+  render(Object.values(unicos));
+
+  productos.innerHTML += `<button onclick="inicio()">⬅ Volver</button>`;
 }
 
 function inicio(){
@@ -308,58 +312,58 @@ function inicio(){
   panel.style.display="none";
 }
 
-// VOLVER A PRODUCTOS
-function volverProductos(){
-  productos.style.display="grid";
-
-  render(inventario.filter(p=>p.categoria===categoriaActual));
-
-  productos.innerHTML += `
-    <button class="bottom-btn" onclick="inicio()">⬅ Volver</button>
-  `;
-}
-
-// PRODUCTOS
+// PRODUCTOS (YA NO REPITE)
 function render(lista){
   let html="";
   lista.forEach(p=>{
     html+=`
-      <div class="card" onclick="verProducto('${encodeURIComponent(JSON.stringify(p))}')">
-        <img src="${p.imagen || 'https://i.imgur.com/4ZQZ4Zy.png'}">
+      <div class="card" onclick="verProducto('${p.id}')">
+        <img src="${p.imagen}">
         <h3>${p.producto}</h3>
         <p style="color:lime;">S/ ${p.unidad}</p>
-        <p style="font-size:12px;color:gray;">Stock: ${p.stock}</p>
       </div>
     `;
   });
   productos.innerHTML = html;
 }
 
-// DETALLE
-function verProducto(data){
-  const p = JSON.parse(decodeURIComponent(data));
+// DETALLE PRO CON VARIANTES
+function verProducto(id){
 
-  productos.style.display="block";
+  const variantes = inventario.filter(p=>p.id==id);
+  const p = variantes[0];
+
+  let filas="";
+
+  variantes.forEach(v=>{
+    filas+=`
+      <tr>
+        <td>${v.talla}</td>
+        <td>${v.color}</td>
+        <td>${v.stock}</td>
+        <td>S/ ${v.unidad}</td>
+      </tr>
+    `;
+  });
 
   productos.innerHTML = `
     <div>
       <img src="${p.imagen}" style="width:100%;border-radius:15px;">
       <h2>${p.producto}</h2>
-      <p style="color:gray;">Disponible en tienda</p>
 
-      <table style="width:100%;text-align:center;background:#111;border-radius:10px;">
+      <table>
         <tr>
-          <th>TALLA</th><th>STOCK</th><th>PRECIO</th><th>DOCENA</th><th>CAJÓN</th>
+          <th>TALLA</th><th>COLOR</th><th>STOCK</th><th>PRECIO</th>
         </tr>
-        <tr>
-          <td>S</td><td>${p.stock}</td><td>S/ ${p.unidad}</td><td>S/ ${p.docena}</td><td>S/ ${p.cajon}</td>
-        </tr>
-        <tr>
-          <td>M</td><td>${p.stock}</td><td>S/ ${p.unidad}</td><td>S/ ${p.docena}</td><td>S/ ${p.cajon}</td>
-        </tr>
+        ${filas}
       </table>
 
-      <button class="bottom-btn" onclick="volverProductos()">⬅ Volver</button>
+      <p style="margin-top:10px;">
+        💰 Compra: S/ ${p.pcompra} <br>
+        📦 Docena: S/ ${p.docena}
+      </p>
+
+      <button onclick="history.back()">⬅ Volver</button>
     </div>
   `;
 }
